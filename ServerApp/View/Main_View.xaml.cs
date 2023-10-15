@@ -26,12 +26,14 @@ namespace ServerApp.View
     {
         Socket listeningSocket;
         Socket clientSocket;
-
-        BindingList<DeviceObj_Model> DevicesList;
+        public Main_Model main_Model = new Main_Model();
 
         public Main_View()
         {
-            DevicesList = new BindingList<DeviceObj_Model>();
+            InitializeComponent();
+            DataGrid_Devices.DataContext = main_Model;
+
+
 
             //--Obszar testowy
             SensorObj_Model testSensor = new SensorObj_Model();
@@ -55,11 +57,10 @@ namespace ServerApp.View
 
             testDevice.SensorsList.Add(testSensor);
 
-            DevicesList.Add(testDevice);
-
+            main_Model.DevicesList.Add(testDevice);
             //--Obszar testowy - koniec
 
-            InitializeComponent();
+            
             //DataGrid_Devices.ItemsSource = DevicesList;
             // Inicjuję wartości domyślne dla adresu IP oraz numeru portu
             TextBox_IPAddress.Text = "127.0.0.1";

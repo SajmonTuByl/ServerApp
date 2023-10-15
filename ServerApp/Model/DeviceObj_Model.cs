@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ServerApp.Model
 {
-    class DeviceObj_Model : INotifyPropertyChanged
+    public class DeviceObj_Model : INotifyPropertyChanged
     {
         private int deviceSerialNo;
         private string deviceName;
@@ -62,15 +62,15 @@ namespace ServerApp.Model
         {
             get
             {
-                return deviceUpdateInterval;
+                return deviceStatus;
             }
             set
             {
-                deviceUpdateInterval = value;
+                deviceStatus = value;
                 OnPropertyChanged();
             }
         }
-        { get => deviceStatus; set => deviceStatus = value; }
+
         public int DeviceUpdateInterval
         {
             get
@@ -95,7 +95,7 @@ namespace ServerApp.Model
                 OnPropertyChanged();
             }
         }
-        internal BindingList<SensorObj_Model> SensorsList
+        public BindingList<SensorObj_Model> SensorsList
         {
             get
             {
