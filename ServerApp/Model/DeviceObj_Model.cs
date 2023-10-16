@@ -95,6 +95,7 @@ namespace ServerApp.Model
                 OnPropertyChanged();
             }
         }
+
         public BindingList<SensorObj_Model> SensorsList
         {
             get
