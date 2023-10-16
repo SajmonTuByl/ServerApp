@@ -42,7 +42,7 @@
                Grid.Column="0"
                Grid.Row="2" />
         <DataGrid x:Name="DataGrid_Sensors"
-                  
+                  ItemsSource="{Binding Path=SensorsList, Mode=OneWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                   AutoGenerateColumns="True"
                   CanUserAddRows="False"
                   Grid.Column="0"

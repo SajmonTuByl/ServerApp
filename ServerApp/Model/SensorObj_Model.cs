@@ -16,6 +16,7 @@ namespace ServerApp.Model
         private string sensorName;
         private string sensorStatus;
         private string sensorType;
+        private DateTime timeStamp;
 
         private float sensorValue_1;
         private float sensorValue_2;
@@ -52,6 +53,12 @@ namespace ServerApp.Model
             get { return sensorType; }
             set { sensorType = value; OnPropertyChanged(); }
         }
+        public DateTime TimeStamp
+        {
+            get { return timeStamp; }
+            set { timeStamp = value; OnPropertyChanged(); }
+        }
+
         public float SensorValue_1 
         {
             get { return sensorValue_1; }

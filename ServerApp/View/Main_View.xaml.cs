@@ -32,7 +32,7 @@ namespace ServerApp.View
         {
             InitializeComponent();
             DataGrid_Devices.DataContext = main_Model;
-
+            DataGrid_Sensors.DataContext = main_Model;
 
 
             //--Obszar testowy
@@ -58,9 +58,11 @@ namespace ServerApp.View
             testDevice.SensorsList.Add(testSensor);
 
             main_Model.DevicesList.Add(testDevice);
+
+            main_Model.UpdateSensorsList();
             //--Obszar testowy - koniec
 
-            
+
             //DataGrid_Devices.ItemsSource = DevicesList;
             // Inicjuję wartości domyślne dla adresu IP oraz numeru portu
             TextBox_IPAddress.Text = "127.0.0.1";
