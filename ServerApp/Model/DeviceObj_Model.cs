@@ -10,7 +10,7 @@ namespace ServerApp.Model
 {
     public class DeviceObj_Model : INotifyPropertyChanged
     {
-        private int deviceSerialNo;
+        private int deviceId;
         private string deviceName;
         private string deviceIpAddress;
         private string deviceStatus;
@@ -19,15 +19,15 @@ namespace ServerApp.Model
 
         private BindingList<SensorObj_Model> sensorsList = new BindingList<SensorObj_Model>();
 
-        public int DeviceSerialNo
+        public int DeviceId
         {
             get
             {
-                return deviceSerialNo;
+                return deviceId;
             }
             set
             {
-                deviceSerialNo = value;
+                deviceId = value;
                 OnPropertyChanged();
             }
         }

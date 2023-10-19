@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.ComponentModel;
 using ServerApp.Model;
+using System.Text.Json;
 
 namespace ServerApp.View
 {
@@ -37,18 +38,16 @@ namespace ServerApp.View
 
             //--Obszar testowy
             SensorObj_Model testSensor = new SensorObj_Model();
-            testSensor.SensorSerialNo = 111;
+            testSensor.SensorId = 111;
             testSensor.SensorName = "Czujnik testowy";
             testSensor.SensorStatus = "Działa";
             testSensor.SensorType = "temperature";
 
-            testSensor.SensorValue_1 = 66;
-            testSensor.SensorValue_2 = -15;
-            testSensor.SensorUnit_1 = "oC";
-            testSensor.SensorUnit_2 = "oC";
+            testSensor.SensorValue = 66;
+            testSensor.SensorUnit = "oC";
 
             DeviceObj_Model testDevice = new DeviceObj_Model();
-            testDevice.DeviceSerialNo = 222;
+            testDevice.DeviceId = 222;
             testDevice.DeviceName = "ArduinoModule_1";
             testDevice.DeviceIpAddress = "192.168.1.10";
             testDevice.DeviceStatus = "Ok";
@@ -131,7 +130,7 @@ namespace ServerApp.View
                     byte[] bytes = new byte[1024];
                     int counter = clientSocket.Receive(bytes);
                     string data = Encoding.ASCII.GetString(bytes, 0, counter);
-                    //richTextBox_MessageWindow.AppendText("Client:\n" + data + "\n");
+                    DeserializeData(data);
                 }
                 catch (SocketException)
                 {
@@ -168,5 +167,10 @@ namespace ServerApp.View
             }
         }
         */
+        public void DeserializeData(string data)
+        {
+            Deserialization_Model? deserializedData = JsonSerializer.Deserialize<Deserialization_Model>(data);
+
+        }
     }
 }

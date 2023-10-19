@@ -53,6 +53,7 @@
                   MinWidth="600"
                   HorizontalAlignment="Center">
         </DataGrid>
+        <!--
         <Label Content="Available actuators"
                Grid.Column="0"
                Grid.Row="4" />
@@ -68,7 +69,7 @@
                   MinWidth="600"
                   HorizontalAlignment="Center">
         </DataGrid>
-        <!--><-->
+        -->
         <StackPanel Grid.Row="6"
                     Grid.ColumnSpan="2"
                     Orientation="Horizontal">

@@ -10,33 +10,31 @@ namespace ServerApp.Model
 {
     public class SensorObj_Model : INotifyPropertyChanged
     {
-        private int parentSerialNo;
+        private int parentId;
         private string parentName;
-        private int sensorSerialNo;
+        private int sensorId;
         private string sensorName;
         private string sensorStatus;
         private string sensorType;
         private DateTime timeStamp;
 
-        private float sensorValue_1;
-        private float sensorValue_2;
-        private string sensorUnit_1;
-        private string sensorUnit_2;
+        private float sensorValue;
+        private string sensorUnit;
 
-        public int ParentSerialNo
+        public int ParentId
         {
-            get { return parentSerialNo; }
-            set { parentSerialNo = value; OnPropertyChanged(); }
+            get { return parentId; }
+            set { parentId = value; OnPropertyChanged(); }
         }
         public string ParentName
         {
             get { return parentName; }
             set { parentName = value; OnPropertyChanged(); }
         }
-        public int SensorSerialNo 
+        public int SensorId 
         {
-            get { return sensorSerialNo; } 
-            set { sensorSerialNo = value; OnPropertyChanged(); }
+            get { return sensorId; } 
+            set { sensorId = value; OnPropertyChanged(); }
         }
         public string SensorName
         {
@@ -59,25 +57,15 @@ namespace ServerApp.Model
             set { timeStamp = value; OnPropertyChanged(); }
         }
 
-        public float SensorValue_1 
+        public float SensorValue
         {
-            get { return sensorValue_1; }
-            set { sensorValue_1 = value; OnPropertyChanged(); }
+            get { return sensorValue; }
+            set { sensorValue = value; OnPropertyChanged(); }
         }
-        public float SensorValue_2 
+        public string SensorUnit
         {
-            get { return sensorValue_2; }
-            set { sensorValue_2 = value; OnPropertyChanged(); }
-        }
-        public string SensorUnit_1 
-        {
-            get { return sensorUnit_1; }
-            set { sensorUnit_1 = value; OnPropertyChanged(); }
-        }
-        public string SensorUnit_2 
-        {
-            get { return sensorUnit_2; }
-            set { sensorUnit_2 = value; OnPropertyChanged(); }
+            get { return sensorUnit; }
+            set { sensorUnit = value; OnPropertyChanged(); }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

@@ -46,7 +46,7 @@ namespace ServerApp.Model
             {
                 foreach (var sensor in device.SensorsList)
                 {
-                    sensor.ParentSerialNo = device.DeviceSerialNo;
+                    sensor.ParentId = device.DeviceId;
                     sensor.ParentName = device.DeviceName;
                     SensorsList.Add(sensor);
                 }
