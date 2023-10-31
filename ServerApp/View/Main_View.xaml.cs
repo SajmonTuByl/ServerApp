@@ -1,22 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.ComponentModel;
 using ServerApp.Model;
-using System.Text.Json;
+using WebSocketSharp;
+using WebSocketSharp.Server;
 
 namespace ServerApp.View
 {
@@ -27,14 +19,12 @@ namespace ServerApp.View
     {
         Socket listeningSocket;
         Socket clientSocket;
-        public Main_Model main_Model = new Main_Model();
 
         public Main_View()
         {
-            InitializeComponent();
-            DataGrid_Devices.DataContext = main_Model;
-            DataGrid_Sensors.DataContext = main_Model;
-
+            WebSocketServer wssv = new WebSocketServer("ws://192.168.1.69:11000");
+            wssv.AddWebSocketService<DataReceiving_Model>("/");
+            wssv.Start();
 
             //--Obszar testowy
             SensorObj_Model testSensor = new SensorObj_Model();
@@ -56,12 +46,11 @@ namespace ServerApp.View
 
             testDevice.SensorsList.Add(testSensor);
 
-            main_Model.DevicesList.Add(testDevice);
+            GlobalVariables.devicesList.Add(testDevice);
 
-            main_Model.UpdateSensorsList();
             //--Obszar testowy - koniec
 
-
+            InitializeComponent();
             //DataGrid_Devices.ItemsSource = DevicesList;
             // Inicjuję wartości domyślne dla adresu IP oraz numeru portu
             TextBox_IPAddress.Text = "127.0.0.1";
@@ -130,7 +119,7 @@ namespace ServerApp.View
                     byte[] bytes = new byte[1024];
                     int counter = clientSocket.Receive(bytes);
                     string data = Encoding.ASCII.GetString(bytes, 0, counter);
-                    DeserializeData(data);
+                    //richTextBox_MessageWindow.AppendText("Client:\n" + data + "\n");
                 }
                 catch (SocketException)
                 {
@@ -143,34 +132,6 @@ namespace ServerApp.View
                     break;
                 }
             }
-            //label_Status.Text = "Client is disconnected!";
-        }
-
-        /*
-        private void button_Send_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                richTextBox_MessageWindow.AppendText("Server:\n" + textBox_Message.Text + "\n");
-                byte[] message = Encoding.ASCII.GetBytes(textBox_Message.Text);
-                clientSocket.Send(message);
-                textBox_Message.Text = "";
-            }
-            catch (SocketException)
-            {
-                MessageBox.Show("Error. SocketException");
-
-                clientSocket.Close();
-                label_Status.Text = "Error. Disconnected";
-                textBox_Message.Enabled = false;
-                button_Send.Enabled = false;
-            }
-        }
-        */
-        public void DeserializeData(string data)
-        {
-            Deserialization_Model? deserializedData = JsonSerializer.Deserialize<Deserialization_Model>(data);
-
         }
     }
 }
