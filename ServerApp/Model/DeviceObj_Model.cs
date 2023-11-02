@@ -28,7 +28,7 @@ namespace ServerApp.Model
             set
             {
                 deviceId = value;
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(DeviceId));
             }
         }
 
@@ -41,6 +41,7 @@ namespace ServerApp.Model
             set
             {
                 deviceName = value;
+                OnPropertyChanged(nameof(DeviceName));
                 OnPropertyChanged();
             }
         }
@@ -54,6 +55,7 @@ namespace ServerApp.Model
             set
             {
                 deviceIpAddress = value;
+                OnPropertyChanged(nameof(DeviceIpAddress));
                 OnPropertyChanged();
             }
         }
@@ -67,6 +69,7 @@ namespace ServerApp.Model
             set
             {
                 deviceStatus = value;
+                OnPropertyChanged(nameof(DeviceStatus));
                 OnPropertyChanged();
             }
         }
@@ -80,6 +83,7 @@ namespace ServerApp.Model
             set
             {
                 deviceUpdateInterval = value;
+                OnPropertyChanged(nameof(DeviceUpdateInterval));
                 OnPropertyChanged();
             }
         }
@@ -92,6 +96,7 @@ namespace ServerApp.Model
             set
             {
                 deviceBatteryLevel = value;
+                OnPropertyChanged(nameof(DeviceBatteryLevel));
                 OnPropertyChanged();
             }
         }

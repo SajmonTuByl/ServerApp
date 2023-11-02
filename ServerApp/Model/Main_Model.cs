@@ -8,55 +8,8 @@ using System.Threading.Tasks;
 
 namespace ServerApp.Model
 {
-    public class Main_Model : INotifyPropertyChanged
+    public class Main_Model
     {
-        private BindingList<DeviceObj_Model> devicesList = new BindingList<DeviceObj_Model>();
-        private BindingList<SensorObj_Model> sensorsList = new BindingList<SensorObj_Model>();
-
-        public BindingList<DeviceObj_Model> DevicesList
-        {
-            get
-            {
-                return devicesList;
-            }
-            set
-            {
-                devicesList = value;
-                OnPropertyChanged();
-            }
-
-        }
-        public BindingList<SensorObj_Model> SensorsList
-        {
-            get
-            {
-                return sensorsList;
-            }
-            set
-            {
-                sensorsList = value;
-                OnPropertyChanged();
-            }
-
-        }
-        public void UpdateSensorsList()
-        {
-            SensorsList.Clear();
-            foreach (var device in devicesList)
-            {
-                foreach (var sensor in device.SensorsList)
-                {
-                    sensor.ParentId = device.DeviceId;
-                    sensor.ParentName = device.DeviceName;
-                    SensorsList.Add(sensor);
-                }
-            }
-        }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
+        
     }
 }

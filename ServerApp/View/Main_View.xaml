@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ServerApp.View"
+        xmlns:z="clr-namespace:ServerApp"
         mc:Ignorable="d"
         Height="auto" Width="auto">
     <Grid>
@@ -23,11 +24,17 @@
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
+        <!--
+        <Grid.DataContext>
+            <z:EnvironmentalVariables/>
+        </Grid.DataContext>
+-->
+        
         <Label Content="Connected devices"
                Grid.Column="0"
                Grid.Row="0" />
         <DataGrid x:Name="DataGrid_Devices"
-                  ItemsSource="{Binding Path=DevicesList, Mode=OneWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                  ItemsSource="{Binding devicesList, Mode=OneWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                   AutoGenerateColumns="True"
                   CanUserAddRows="False"
                   Grid.Column="0"
@@ -42,7 +49,7 @@
                Grid.Column="0"
                Grid.Row="2" />
         <DataGrid x:Name="DataGrid_Sensors"
-                  ItemsSource="{Binding Path=SensorsList, Mode=OneWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                  ItemsSource="{Binding Path=devicesList, Mode=OneWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                   AutoGenerateColumns="True"
                   CanUserAddRows="False"
                   Grid.Column="0"
@@ -90,16 +97,17 @@
                     Click="Button_Connect_Click" />
             <Button x:Name="Button_Disconnect"
                     Content="Disonnect"
-                    IsEnabled="false"
-                    Margin="10,10,10,10" />
+                    IsEnabled="true"
+                    Margin="10,10,10,10"
+                    Click="Button_Disconnect_Click"/>
             <Label Content="Server status: "
                    Margin="10,10,10,10" />
             <Label x:Name="Label_Status"
-                   Content="Working"
+                   Content="Not working"
                    Margin="10,10,10,10" />
             <Label Content="Database status: "
                    Margin="10,10,10,10" />
-            <Label Content="Connected"
+            <Label Content="Not connected"
                    Margin="10,10,10,10" />
         </StackPanel>
 

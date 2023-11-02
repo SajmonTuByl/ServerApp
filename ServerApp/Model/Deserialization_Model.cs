@@ -9,19 +9,19 @@ namespace ServerApp.Model
 {
     public class Deserialization_Model
     {
-        public int DeviceId { get; set; }
-        public string DeviceName { get; set; }
-        public string DeviceIpAddress { get; set; }
-        public string DeviceStatus { get; set; }
-        public int DeviceUpdateInterval { get; set; }
-        public int DeviceBatteryLevel { get; set; }
+        public int? deviceId { get; set; }
+        public string? deviceName { get; set; }
+        public string? deviceIpAddress { get; set; }
+        public string? deviceStatus { get; set; }
+        public int? deviceUpdateInterval { get; set; }
+        public int? deviceBatteryLevel { get; set; }
 
-        public int[] SensorId { get; set; }
-        public string[] SensorName { get; set; }
-        public string[] SensorStatus { get; set; }
-        public string[] SensorType { get; set; }
-        public float[] SensorValue { get; set; }
-        public string[] SensorUnit { get; set; }
+        public int[]? sensorId { get; set; }
+        public string[]? sensorName { get; set; }
+        public string[]? sensorStatus { get; set; }
+        public string[]? sensorType { get; set; }
+        public float[]? sensorValue { get; set; }
+        public string[]? sensorUnit { get; set; }
 
     }
 }
