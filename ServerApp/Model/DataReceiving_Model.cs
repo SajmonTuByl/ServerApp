@@ -14,7 +14,7 @@ namespace ServerApp.Model
         protected override void OnMessage(MessageEventArgs e)
         {
             base.OnMessage(e);
-            GlobalVariables.DeserializeReceivedData(e.Data);
+            DeserializeReceivedData.DeserializeData(e.Data);
         }
 
         protected override void OnOpen()
