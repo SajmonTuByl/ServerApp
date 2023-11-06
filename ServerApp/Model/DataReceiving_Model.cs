@@ -1,29 +1,29 @@
 ﻿using System;
 using WebSocketSharp;
 using WebSocketSharp.Server;
-using System.Text.Json;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Windows.Threading;
 using ServerApp.View;
-using static System.Net.Mime.MediaTypeNames;
+using System.Text.Json;
+//using ClassLibrary;
 
 namespace ServerApp.Model
 {
     public class DataReceiving_Model : WebSocketBehavior
     {
         DeserializeReceivedData deserialize = new DeserializeReceivedData();
-        bool eventAdded = false;
+
+        private readonly IDataAccess _dataAccess;
+
+
+        public DataReceiving_Model(IDataAccess dataAccess)
+        {
+            this._dataAccess = dataAccess;
+            //deserialize.ReceivingData += Main_View.OnReceivingData;
+        }
 
         protected override void OnMessage(MessageEventArgs e)
         {
             base.OnMessage(e);
-            if (!eventAdded)
-            {
-                deserialize.ReceivingData += Main_View.OnReceivingData;
-                eventAdded = true;
-            }
-            deserialize.DeserializeData(e.Data);
+            _dataAccess.SetData(e.Data);
         }
 
         protected override void OnOpen()
@@ -37,7 +37,5 @@ namespace ServerApp.Model
             base.OnClose(e);
             GlobalVariables.numberOfDevices--;
         }
-
-        
     }
 }

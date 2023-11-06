@@ -12,6 +12,7 @@ using WebSocketSharp.Server;
 using System.Windows.Data;
 using System.Collections.ObjectModel;
 using System.Text.Json;
+using ServerApp.ViewModel;
 
 namespace ServerApp.View
 {
@@ -20,24 +21,17 @@ namespace ServerApp.View
     /// </summary>
     public partial class Main_View
     {
+        public ObservableCollection<DeviceObj_Model> DevicesList { get; set; }
         WebSocketServer wssv;
-        public static ObservableCollection<DeviceObj_Model> devicesList = new ObservableCollection<DeviceObj_Model>();
-        
 
         public Main_View()
         {
+            this.DevicesList = new ObservableCollection<DeviceObj_Model>();
+
             InitializeComponent();
-            DataGrid_Sensors.DataContext = devicesList;
-
-            DeserializeReceivedData data = new DeserializeReceivedData();
-            data.ReceivingData += OnReceivingData;
-
-            //this.Dispatcher.BeginInvoke(new Action(() => DataGrid_Sensors.DataContext = EnvironmentalVariables.Instance.DevicesList));
-            //DataGrid_Sensors.ItemsSource = DataReceiving_Model.devicesList;
+            this.DataContext = this;
 
             GlobalVariables.serverIp = GetLocalIPAddress();
-
-            // Inicjuję wartości domyślne dla adresu IP oraz numeru portu
             TextBox_IPAddress.Text = GlobalVariables.serverIp;
             TextBox_PortNo.Text = GlobalVariables.serverPort;
         }
@@ -48,17 +42,10 @@ namespace ServerApp.View
             GlobalVariables.serverIp = TextBox_IPAddress.Text;
             GlobalVariables.serverPort = TextBox_PortNo.Text;
 
-            
-            
-            wssv = new WebSocketServer("ws://" + GlobalVariables.serverIp + ":" + GlobalVariables.serverPort);
-            wssv.AddWebSocketService<DataReceiving_Model>("/");
-            wssv.Start();
+            StartServer();
 
-            if (wssv.IsListening) GlobalVariables.serverStatus = "Working";
-            else GlobalVariables.serverStatus = "Disconnected";
-            Label_Status.Content = GlobalVariables.serverStatus; // To przerobić na singletona, aby można było dołożyć PropertyChanged
+            Label_Status.Content = GlobalVariables.serverStatus; // To przerobić na singletona/zmienną w widoku, aby można było dołożyć PropertyChanged
 
-            
         }
 
         public static string GetLocalIPAddress()
@@ -76,22 +63,68 @@ namespace ServerApp.View
 
         private void Button_Disconnect_Click(object sender, RoutedEventArgs e)
         {
-            /*
-            foreach (var device in DataReceiving_Model.devicesList)
-            {
-                devices.Add(device);
-            }
-            */
-            //DataGrid_Sensors.ItemsSource = devices;
             DataGrid_Sensors.Items.Refresh();
         }
 
+        public void StartServer()
+        {
+            wssv = new WebSocketServer("ws://" + GlobalVariables.serverIp + ":" + GlobalVariables.serverPort);
+            wssv.AddWebSocketService<DataReceiving_Model>("/");
+            wssv.Start();
+
+            if (wssv.IsListening) GlobalVariables.serverStatus = "Working";
+            else GlobalVariables.serverStatus = "Disconnected";
+        }
+
+
+
+
+
         //To check if you're connected or not:
         //System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
-        public static void OnReceivingData(object source, ReceivingDataEventArgs args)
+
+
+
+        /*
+        public BindingList<DeviceObj_Model> DevicesList
         {
-            devicesList.Add(args.Device);
-        //https://stackoverflow.com/questions/11142177/pass-by-value-in-c-sharp
+            get
+            {
+                return devicesList;
+            }
+            set
+            {
+                devicesList = value;
+                OnPropertyChanged();
+                UpdateSensorsList();
+            }
+
         }
+        public BindingList<SensorObj_Model> SensorsList
+        {
+            get
+            {
+                return sensorsList;
+            }
+            set
+            {
+                sensorsList = value;
+                OnPropertyChanged();
+            }
+
+        }
+        public void UpdateSensorsList()
+        {
+            SensorsList.Clear();
+            foreach (var device in devicesList)
+            {
+                foreach (var sensor in device.SensorsList)
+                {
+                    SensorsList.Add(sensor);
+                }
+            }
+        }
+        */
     }
+
 }
