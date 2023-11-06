@@ -21,16 +21,15 @@ namespace ServerApp.View
     /// </summary>
     public partial class Main_View
     {
-        public ObservableCollection<DeviceObj_Model> DevicesList { get; set; }
+        public Main_ViewModel Main_ViewModel { get; set; }
         WebSocketServer wssv;
 
         public Main_View()
         {
-            this.DevicesList = new ObservableCollection<DeviceObj_Model>();
-
             InitializeComponent();
-            this.DataContext = this;
+            this.DataContext = Main_ViewModel;
 
+            // To wrzucić do ViewModel
             GlobalVariables.serverIp = GetLocalIPAddress();
             TextBox_IPAddress.Text = GlobalVariables.serverIp;
             TextBox_PortNo.Text = GlobalVariables.serverPort;
@@ -39,12 +38,14 @@ namespace ServerApp.View
         // Kliknięcie w przycisk "Connect" uruchamia nasłuch na danym porcie
         private void Button_Connect_Click(object sender, RoutedEventArgs e)
         {
+            // To wrzucić do ViewModel
             GlobalVariables.serverIp = TextBox_IPAddress.Text;
             GlobalVariables.serverPort = TextBox_PortNo.Text;
 
             StartServer();
 
-            Label_Status.Content = GlobalVariables.serverStatus; // To przerobić na singletona/zmienną w widoku, aby można było dołożyć PropertyChanged
+            // To wrzucić do ViewModel
+            Label_Status.Content = GlobalVariables.serverStatus;
 
         }
 

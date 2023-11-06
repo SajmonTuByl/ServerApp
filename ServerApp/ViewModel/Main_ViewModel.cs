@@ -14,18 +14,10 @@ namespace ServerApp.ViewModel
 {
     public class Main_ViewModel
     {
-        public Main_View Main_View { get; set; }
-        
+        public ObservableCollection<DeviceObj_Model> DevicesList { get; set; }
+
         public Main_ViewModel()
         {
-            Main_View = new Main_View();
-            DeserializeReceivedData data = new DeserializeReceivedData();
-            data.ReceivingData += OnReceivingData;
-        }
-
-        public void OnReceivingData(object source, ReceivingDataEventArgs args)
-        {
-            Main_View.DevicesList.Add(args.Device);
         }
     }
 }
