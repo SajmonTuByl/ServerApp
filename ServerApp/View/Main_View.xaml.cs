@@ -11,6 +11,7 @@ using WebSocketSharp;
 using WebSocketSharp.Server;
 using System.Windows.Data;
 using System.Collections.ObjectModel;
+using System.Text.Json;
 
 namespace ServerApp.View
 {
@@ -21,11 +22,15 @@ namespace ServerApp.View
     {
         WebSocketServer wssv;
         public static ObservableCollection<DeviceObj_Model> devicesList = new ObservableCollection<DeviceObj_Model>();
+        
 
         public Main_View()
         {
             InitializeComponent();
             DataGrid_Sensors.DataContext = devicesList;
+
+            DeserializeReceivedData data = new DeserializeReceivedData();
+            data.ReceivingData += OnReceivingData;
 
             //this.Dispatcher.BeginInvoke(new Action(() => DataGrid_Sensors.DataContext = EnvironmentalVariables.Instance.DevicesList));
             //DataGrid_Sensors.ItemsSource = DataReceiving_Model.devicesList;
@@ -43,13 +48,17 @@ namespace ServerApp.View
             GlobalVariables.serverIp = TextBox_IPAddress.Text;
             GlobalVariables.serverPort = TextBox_PortNo.Text;
 
+            
+            
             wssv = new WebSocketServer("ws://" + GlobalVariables.serverIp + ":" + GlobalVariables.serverPort);
             wssv.AddWebSocketService<DataReceiving_Model>("/");
             wssv.Start();
+
             if (wssv.IsListening) GlobalVariables.serverStatus = "Working";
             else GlobalVariables.serverStatus = "Disconnected";
+            Label_Status.Content = GlobalVariables.serverStatus; // To przerobić na singletona, aby można było dołożyć PropertyChanged
 
-            Label_Status.Content = GlobalVariables.serverStatus;
+            
         }
 
         public static string GetLocalIPAddress()
@@ -79,5 +88,10 @@ namespace ServerApp.View
 
         //To check if you're connected or not:
         //System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
+        public static void OnReceivingData(object source, ReceivingDataEventArgs args)
+        {
+            devicesList.Add(args.Device);
+        //https://stackoverflow.com/questions/11142177/pass-by-value-in-c-sharp
+        }
     }
 }

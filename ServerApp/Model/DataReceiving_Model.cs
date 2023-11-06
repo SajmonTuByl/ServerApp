@@ -6,15 +6,24 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Threading;
 using ServerApp.View;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ServerApp.Model
 {
     public class DataReceiving_Model : WebSocketBehavior
     {
+        DeserializeReceivedData deserialize = new DeserializeReceivedData();
+        bool eventAdded = false;
+
         protected override void OnMessage(MessageEventArgs e)
         {
             base.OnMessage(e);
-            DeserializeReceivedData.DeserializeData(e.Data);
+            if (!eventAdded)
+            {
+                deserialize.ReceivingData += Main_View.OnReceivingData;
+                eventAdded = true;
+            }
+            deserialize.DeserializeData(e.Data);
         }
 
         protected override void OnOpen()
@@ -28,5 +37,7 @@ namespace ServerApp.Model
             base.OnClose(e);
             GlobalVariables.numberOfDevices--;
         }
+
+        
     }
 }

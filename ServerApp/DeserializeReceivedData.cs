@@ -9,10 +9,18 @@ using System.Threading.Tasks;
 
 namespace ServerApp
 {
-    public static class DeserializeReceivedData
+    public class ReceivingDataEventArgs : EventArgs
     {
+        public DeviceObj_Model Device { get; set; }
+    }
+
+    public class DeserializeReceivedData
+    {
+        public delegate void ReceivingDataEventHandler(object source, ReceivingDataEventArgs args);
+        public event ReceivingDataEventHandler ReceivingData;
+
         static DeviceObj_Model device = new DeviceObj_Model();
-        public static void DeserializeData(string data)
+        public void DeserializeData(string data)
         {
             Deserialization_Model? deserialization_Model = JsonSerializer.Deserialize<Deserialization_Model>(data);
             SensorObj_Model sensorObj_Model = new SensorObj_Model();
@@ -47,7 +55,13 @@ namespace ServerApp
 
                 device.SensorsList.Add(sensorObj_Model);
             }
-            Main_View.devicesList.Add(device);
+            OnReceivingData(device);
+        }
+
+        public virtual void OnReceivingData(DeviceObj_Model Device)
+        {
+            if (ReceivingData != null)
+                ReceivingData(this, new ReceivingDataEventArgs() { Device = device });
         }
     }
 }
