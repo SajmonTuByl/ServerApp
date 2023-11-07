@@ -38,6 +38,7 @@ namespace ServerApp.View
             var dispatcher = Application.Current.Dispatcher;
             dispatcher.Invoke(() =>
             {
+                // Dodawanie urządzeń do DevicesList
                 if (Main_ViewModel.DevicesList.Count == 0) Main_ViewModel.DevicesList.Add(device);
                 foreach (var item in Main_ViewModel.DevicesList)
                 {
@@ -49,6 +50,7 @@ namespace ServerApp.View
                     }
                 }
 
+                // Dodawanie sensorów do SensorsLIst
                 foreach (var item in Main_ViewModel.DevicesList)
                 {
                     foreach (var sensor1 in item.SensorsList)

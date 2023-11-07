@@ -19,6 +19,9 @@ namespace ServerApp.ViewModel
         private string serverStatus;
         private string dbStatus;
 
+        private int selectedSensorParentId;
+        private int selectedSensorSensorId;
+
         public ObservableCollection<DeviceObj_Model> DevicesList { get; set; }
         public ObservableCollection<SensorObj_Model> SensorsList { get; set; }
 
@@ -57,6 +60,25 @@ namespace ServerApp.ViewModel
             {
                 dbStatus = value;
                 OnPropertyChanged("DbStatus");
+            }
+        }
+
+        public int SelectedSensorParentId
+        {
+            get => selectedSensorParentId;
+            set
+            {
+                selectedSensorParentId = value;
+                OnPropertyChanged("SelectedSensorParentId");
+            }
+        }
+        public int SelectedSensorSensorId
+        {
+            get => selectedSensorSensorId;
+            set
+            {
+                selectedSensorSensorId = value;
+                OnPropertyChanged("SelectedSensorSensorId");
             }
         }
 
