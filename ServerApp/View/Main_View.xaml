@@ -30,7 +30,7 @@
         </Grid.DataContext>
 -->
         
-        <Label Content="Connected devices"
+        <Label Content="Podłączone urządzenia"
                Grid.Column="0"
                Grid.Row="0" />
         <DataGrid x:Name="DataGrid_Devices"
@@ -41,11 +41,11 @@
                   Grid.ColumnSpan="1"
                   Grid.Row="1"
                   Grid.RowSpan="1"
-                  MinHeight="200"
-                  MinWidth="600"
+                  Height="300"
+                  Width="650"
                   HorizontalAlignment="Center">
         </DataGrid>
-        <Label Content="Available sensors"
+        <Label Content="Podłączone czujniki"
                Grid.Column="0"
                Grid.Row="2" />
         <DataGrid x:Name="DataGrid_Sensors"
@@ -56,8 +56,8 @@
                   Grid.ColumnSpan="1"
                   Grid.Row="3"
                   Grid.RowSpan="1"
-                  MinHeight="200"
-                  MinWidth="600"
+                  Height="300"
+                  Width="650"
                   HorizontalAlignment="Center">
         </DataGrid>
         <!--
@@ -80,6 +80,8 @@
         <StackPanel Grid.Row="6"
                     Grid.ColumnSpan="2"
                     Orientation="Horizontal">
+            <Label Content="Serwer "
+                   VerticalContentAlignment="Center"/>
             <TextBox x:Name="TextBox_IPAddress"
                      Text="{Binding Path=ServerIp, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                      Width="100"
@@ -92,22 +94,47 @@
                      VerticalContentAlignment="Center"
                      Margin="10,10,10,10" />
             <Button x:Name="Button_Connect"
-                    Content="Connect"
+                    Content="Uruchom"
                     Margin="10,10,10,10"
                     Click="Button_Connect_Click" />
             <Button x:Name="Button_Disconnect"
-                    Content="Disonnect"
+                    Content="Zatrzymaj"
                     IsEnabled="true"
                     Margin="10,10,10,10"
                     Click="Button_Disconnect_Click"/>
-            <Label Content="Server status: "
+            <Label Content="Status: "
                    Margin="10,10,10,10" />
             <Label x:Name="Label_Status"
                    Content="{Binding Path=ServerStatus, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                    Margin="10,10,10,10" />
-            <Label Content="Database status: "
+        </StackPanel>
+        
+        <StackPanel Grid.Row="7"
+                    Grid.ColumnSpan="2"
+                    Orientation="Horizontal">
+            <Label Content="Baza danych "
+                   VerticalContentAlignment="Center"/>
+            <TextBox x:Name="TextBox_DbIPAddress"
+                     Text="{Binding Path=ServerIp, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                     Width="100"
+                     TextAlignment="Center"
+                     VerticalContentAlignment="Center"
+                     Margin="10,10,10,10" />
+
+            <Button x:Name="Button_ConnectDb"
+                    Content="Połącz"
+                    Margin="10,10,10,10"
+                    Click="Button_ConnectDb_Click" />
+            <Button x:Name="Button_DisconnectDb"
+                    Content="Rozłącz"
+                    IsEnabled="false"
+                    Margin="10,10,10,10"
+                    Click="Button_DisconnectDb_Click" />
+
+            <Label Content="Status: "
                    Margin="10,10,10,10" />
-            <Label Content="{Binding Path=DbStatus, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+            <Label x:Name="Label_DbStatus"
+                   Content="{Binding Path=DbStatus, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                    Margin="10,10,10,10" />
         </StackPanel>
 

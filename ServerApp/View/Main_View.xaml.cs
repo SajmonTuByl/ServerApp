@@ -13,6 +13,7 @@ using System.Windows.Data;
 using System.Collections.ObjectModel;
 using System.Text.Json;
 using ServerApp.ViewModel;
+using Oracle.ManagedDataAccess.Client;
 
 namespace ServerApp.View
 {
@@ -23,6 +24,7 @@ namespace ServerApp.View
     {
         public static Main_ViewModel Main_ViewModel { get; set; }
         WebSocketServer wssv;
+        OracleConnection con;
 
         public Main_View()
         {
@@ -100,13 +102,89 @@ namespace ServerApp.View
 
         public void StartServer()
         {
+            Main_ViewModel.ServerStatus = "Uruchamiam...";
             wssv = new WebSocketServer("ws://" + Main_ViewModel.ServerIp + ":" + Main_ViewModel.ServerPort);
             wssv.AddWebSocketService<DataReceiving_Model>("/");
-            wssv.Start();
-
-            if (wssv.IsListening) Main_ViewModel.ServerStatus = "Working";
-            else Main_ViewModel.ServerStatus = "Disconnected";
+            try
+            {
+                wssv.Start();
+                Main_ViewModel.ServerStatus = "Uruchomiony";
+                Button_Connect.IsEnabled = false;
+                Button_Disconnect.IsEnabled = true;
+            }
+            catch (Exception ex)
+            {
+                Main_ViewModel.ServerStatus = ex.Message;
+                Button_Connect.IsEnabled = true;
+                Button_Disconnect.IsEnabled = false;
+            }
         }
+        public void StopServer()
+        {
+            // Uzupełnić
+        }
+
+        public void StartDb()
+        {
+            Main_ViewModel.DbStatus = "Łączę...";
+            con = new OracleConnection();
+            string connectionString = "Data Source=192.168.167.2/orcl; User Id=student; Password=student;";
+            con.ConnectionString = connectionString;
+            try
+            {
+                con.Open();
+                Main_ViewModel.DbStatus = "Podłączony";
+                Button_ConnectDb.IsEnabled = false;
+                Button_DisconnectDb.IsEnabled = true;
+            }
+            catch (Exception ex)
+            {
+                Main_ViewModel.DbStatus = ex.Message;
+                Button_ConnectDb.IsEnabled = true;
+                Button_DisconnectDb.IsEnabled = false;
+            }          
+        }
+        public void StopDb()
+        {
+            try
+            {
+                con.Close();
+                Main_ViewModel.DbStatus = "Niepodłączony";
+                Button_ConnectDb.IsEnabled = true;
+                Button_DisconnectDb.IsEnabled = false;
+            }
+            catch (Exception ex)
+            {
+                Main_ViewModel.DbStatus = ex.Message;
+            }
+        }
+
+        public void AddSensorToDb(int parentId, int sensorId, DateTime date, float value, string unit)
+        {
+
+        }
+
+        public void AddDeviceToDb(
+            int deviceId, 
+            string deviceName, 
+            string deviceIpAddress, 
+            string deviceStatus, 
+            int deviceUpdateInterval, 
+            int deviceBatteryLevel)
+        {
+           
+        }
+
+        private void Button_DisconnectDb_Click(object sender, RoutedEventArgs e)
+        {
+            StopDb();
+        }
+
+        private void Button_ConnectDb_Click(object sender, RoutedEventArgs e)
+        {
+            StartDb();
+        }
+
         //To check if you're connected or not:
         //System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
     }
