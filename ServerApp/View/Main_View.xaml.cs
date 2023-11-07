@@ -21,32 +21,71 @@ namespace ServerApp.View
     /// </summary>
     public partial class Main_View
     {
-        public Main_ViewModel Main_ViewModel { get; set; }
+        public static Main_ViewModel Main_ViewModel { get; set; }
         WebSocketServer wssv;
 
         public Main_View()
         {
+            Main_ViewModel = new Main_ViewModel();
+
             InitializeComponent();
             this.DataContext = Main_ViewModel;
+            Main_ViewModel.ServerIp = GetLocalIPAddress();
+        }
 
-            // To wrzucić do ViewModel
-            GlobalVariables.serverIp = GetLocalIPAddress();
-            TextBox_IPAddress.Text = GlobalVariables.serverIp;
-            TextBox_PortNo.Text = GlobalVariables.serverPort;
+        public static void GetNewDevice(DeviceObj_Model device)
+        {
+            var dispatcher = Application.Current.Dispatcher;
+            dispatcher.Invoke(() =>
+            {
+                if (Main_ViewModel.DevicesList.Count == 0) Main_ViewModel.DevicesList.Add(device);
+                foreach (var item in Main_ViewModel.DevicesList)
+                {
+                    if (item.DeviceId == device.DeviceId)
+                    {
+                        Main_ViewModel.DevicesList.Remove(item);
+                        Main_ViewModel.DevicesList.Add(device);
+                        break;
+                    }
+                }
+
+                foreach (var item in Main_ViewModel.DevicesList)
+                {
+                    foreach (var sensor in item.SensorsList)
+                    {
+                        //Tu trzeba coś dopisać co będzie sprawdzać, czy sensor jest już na liście
+                        // trzeba foreachem przeiterować Main_ViewModel.SensorsList
+                        Main_ViewModel.SensorsList.Add(sensor);
+                    }
+                }
+            });
+
+            /*
+            if (Main_ViewModel.DevicesList.Count==0) dispatcher.Invoke(() => Main_ViewModel.DevicesList.Add(device));
+            foreach (var item in Main_ViewModel.DevicesList)
+            {
+                if (item.DeviceId == device.DeviceId)
+                {
+                    dispatcher.Invoke(() => Main_ViewModel.DevicesList.Remove(item));
+                    dispatcher.Invoke(() => Main_ViewModel.DevicesList.Add(device));
+                }
+            }
+            
+            dispatcher.Invoke(() => Main_ViewModel.SensorsList.Clear());
+            foreach (var item in Main_ViewModel.DevicesList)
+            {
+                foreach (var sensor in item.SensorsList)
+                {
+                    dispatcher.Invoke(() => Main_ViewModel.SensorsList.Add(sensor));
+                }
+            }
+            */
         }
 
         // Kliknięcie w przycisk "Connect" uruchamia nasłuch na danym porcie
         private void Button_Connect_Click(object sender, RoutedEventArgs e)
         {
-            // To wrzucić do ViewModel
-            GlobalVariables.serverIp = TextBox_IPAddress.Text;
-            GlobalVariables.serverPort = TextBox_PortNo.Text;
-
             StartServer();
-
-            // To wrzucić do ViewModel
-            Label_Status.Content = GlobalVariables.serverStatus;
-
         }
 
         public static string GetLocalIPAddress()
@@ -65,67 +104,20 @@ namespace ServerApp.View
         private void Button_Disconnect_Click(object sender, RoutedEventArgs e)
         {
             DataGrid_Sensors.Items.Refresh();
+            Label_Status.UpdateLayout();
         }
 
         public void StartServer()
         {
-            wssv = new WebSocketServer("ws://" + GlobalVariables.serverIp + ":" + GlobalVariables.serverPort);
+            wssv = new WebSocketServer("ws://" + Main_ViewModel.ServerIp + ":" + Main_ViewModel.ServerPort);
             wssv.AddWebSocketService<DataReceiving_Model>("/");
             wssv.Start();
 
-            if (wssv.IsListening) GlobalVariables.serverStatus = "Working";
-            else GlobalVariables.serverStatus = "Disconnected";
+            if (wssv.IsListening) Main_ViewModel.ServerStatus = "Working";
+            else Main_ViewModel.ServerStatus = "Disconnected";
         }
-
-
-
-
-
         //To check if you're connected or not:
         //System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
-
-
-
-        /*
-        public BindingList<DeviceObj_Model> DevicesList
-        {
-            get
-            {
-                return devicesList;
-            }
-            set
-            {
-                devicesList = value;
-                OnPropertyChanged();
-                UpdateSensorsList();
-            }
-
-        }
-        public BindingList<SensorObj_Model> SensorsList
-        {
-            get
-            {
-                return sensorsList;
-            }
-            set
-            {
-                sensorsList = value;
-                OnPropertyChanged();
-            }
-
-        }
-        public void UpdateSensorsList()
-        {
-            SensorsList.Clear();
-            foreach (var device in devicesList)
-            {
-                foreach (var sensor in device.SensorsList)
-                {
-                    SensorsList.Add(sensor);
-                }
-            }
-        }
-        */
     }
 
 }

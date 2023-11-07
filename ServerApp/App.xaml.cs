@@ -16,7 +16,7 @@ namespace ServerApp
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddSingleton<MainWindow>();
-                    services.AddTransient<IDataAccess, DataAccess>();
+                    //services.AddTransient<IDataAccess, DataAccess>();
                 }).Build();
         }
 
