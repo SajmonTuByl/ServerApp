@@ -51,35 +51,24 @@ namespace ServerApp.View
 
                 foreach (var item in Main_ViewModel.DevicesList)
                 {
-                    foreach (var sensor in item.SensorsList)
+                    foreach (var sensor1 in item.SensorsList)
                     {
-                        //Tu trzeba coś dopisać co będzie sprawdzać, czy sensor jest już na liście
-                        // trzeba foreachem przeiterować Main_ViewModel.SensorsList
-                        Main_ViewModel.SensorsList.Add(sensor);
+                        if (Main_ViewModel.SensorsList.Count != 0)
+                        {
+                            foreach (var sensor2 in Main_ViewModel.SensorsList)
+                            {
+                                if (sensor1.SensorId == sensor2.SensorId && sensor1.ParentId == sensor2.ParentId)
+                                {
+                                    Main_ViewModel.SensorsList.Remove(sensor2);
+                                    Main_ViewModel.SensorsList.Add(sensor1);
+                                    break;
+                                }
+                            }
+                        }
+                        else Main_ViewModel.SensorsList.Add(sensor1);
                     }
                 }
             });
-
-            /*
-            if (Main_ViewModel.DevicesList.Count==0) dispatcher.Invoke(() => Main_ViewModel.DevicesList.Add(device));
-            foreach (var item in Main_ViewModel.DevicesList)
-            {
-                if (item.DeviceId == device.DeviceId)
-                {
-                    dispatcher.Invoke(() => Main_ViewModel.DevicesList.Remove(item));
-                    dispatcher.Invoke(() => Main_ViewModel.DevicesList.Add(device));
-                }
-            }
-            
-            dispatcher.Invoke(() => Main_ViewModel.SensorsList.Clear());
-            foreach (var item in Main_ViewModel.DevicesList)
-            {
-                foreach (var sensor in item.SensorsList)
-                {
-                    dispatcher.Invoke(() => Main_ViewModel.SensorsList.Add(sensor));
-                }
-            }
-            */
         }
 
         // Kliknięcie w przycisk "Connect" uruchamia nasłuch na danym porcie

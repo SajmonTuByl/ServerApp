@@ -14,13 +14,51 @@ namespace ServerApp.ViewModel
 {
     public class Main_ViewModel : INotifyPropertyChanged
     {
+        private string serverIp;
+        private string serverPort;
+        private string serverStatus;
+        private string dbStatus;
+
         public ObservableCollection<DeviceObj_Model> DevicesList { get; set; }
         public ObservableCollection<SensorObj_Model> SensorsList { get; set; }
 
-        public string ServerIp { get; set; }
-        public string ServerPort { get; set; }
-        public string ServerStatus { get; set; }
-        public string DbStatus { get; set; }
+        public string ServerIp
+        {
+            get => serverIp;
+            set
+            {
+                serverIp = value;
+                OnPropertyChanged("ServerIp");
+            }
+        }
+        public string ServerPort
+        {
+            get => serverPort;
+            set
+            {
+                serverPort = value;
+                OnPropertyChanged("ServerPort");
+            }
+        }
+        public string ServerStatus
+        {
+            get => serverStatus;
+            set
+            {
+                serverStatus = value;
+                OnPropertyChanged("ServerStatus");
+            }
+        }
+
+        public string DbStatus
+        {
+            get => dbStatus;
+            set
+            {
+                dbStatus = value;
+                OnPropertyChanged("DbStatus");
+            }
+        }
 
         public Main_ViewModel()
         {
