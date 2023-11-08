@@ -99,7 +99,7 @@
                     Click="Button_Connect_Click" />
             <Button x:Name="Button_Disconnect"
                     Content="Zatrzymaj"
-                    IsEnabled="true"
+                    IsEnabled="false"
                     Margin="10,10,10,10"
                     Click="Button_Disconnect_Click"/>
             <Label Content="Status: "

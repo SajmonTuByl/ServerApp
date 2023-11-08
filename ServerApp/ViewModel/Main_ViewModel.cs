@@ -105,10 +105,10 @@ namespace ServerApp.ViewModel
 
             ServerIp = "127.0.0.1";
             ServerPort = "11000";
-            ServerStatus = "...";
+            ServerStatus = "Nieuruchomiony";
             DbIp = "127.0.0.1";
             DbPort = "3306"; //orcl
-            DbStatus = "...";
+            DbStatus = "Niepodłączona";
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

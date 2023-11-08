@@ -95,8 +95,7 @@ namespace ServerApp.View
 
         private void Button_Disconnect_Click(object sender, RoutedEventArgs e)
         {
-            DataGrid_Sensors.Items.Refresh();
-            Label_Status.UpdateLayout();
+            StopServer();
         }
 
         public void StartServer()
@@ -106,21 +105,37 @@ namespace ServerApp.View
             wssv.AddWebSocketService<DataReceiving_Model>("/");
             try
             {
-                wssv.Start();
-                Main_ViewModel.ServerStatus = "Uruchomiony";
                 Button_Connect.IsEnabled = false;
                 Button_Disconnect.IsEnabled = true;
+                TextBox_IPAddress.IsEnabled = false;
+                TextBox_PortNo.IsEnabled = false;
+                wssv.Start();
+                Main_ViewModel.ServerStatus = "Uruchomiony";
             }
             catch (Exception ex)
             {
                 Main_ViewModel.ServerStatus = ex.Message;
                 Button_Connect.IsEnabled = true;
                 Button_Disconnect.IsEnabled = false;
+                TextBox_IPAddress.IsEnabled = true;
+                TextBox_PortNo.IsEnabled = true;
             }
         }
         public void StopServer()
         {
-            // Uzupełnić
+            try
+            {
+                wssv.Stop();
+                TextBox_IPAddress.IsEnabled = true;
+                TextBox_PortNo.IsEnabled = true;
+                Button_Connect.IsEnabled = true;
+                Button_Disconnect.IsEnabled = false;
+                Main_ViewModel.ServerStatus = "Nieuruchomiony";
+            } catch (Exception ex)
+            {
+                Main_ViewModel.ServerStatus = ex.Message;
+            }
+            
         }
 
         public void StartDb()
@@ -128,23 +143,27 @@ namespace ServerApp.View
             Main_ViewModel.DbStatus = "Łączę...";
             string myConnectionString;
 
-            myConnectionString = "server=" + Main_ViewModel.DbIp + ";uid=TestUser;pwd=TestPassword;database=TestDb";
+            myConnectionString = "server=" + Main_ViewModel.DbIp + ";port=" + Main_ViewModel.DbPort + ";uid=TestUser;pwd=TestPassword;database=TestDb";
 
             try
             {
+                Button_ConnectDb.IsEnabled = false;
+                Button_DisconnectDb.IsEnabled = true;
+                TextBox_DbIPAddress.IsEnabled = false;
+                TextBox_DbPortNo.IsEnabled = false;
                 conn = new MySql.Data.MySqlClient.MySqlConnection();
                 conn.ConnectionString = myConnectionString;
                 conn.Open();
 
                 Main_ViewModel.DbStatus = "Podłączony";
-                Button_ConnectDb.IsEnabled = false;
-                Button_DisconnectDb.IsEnabled = true;
             }
             catch (MySql.Data.MySqlClient.MySqlException ex)
             {
                 Main_ViewModel.DbStatus = ex.Message;
                 Button_ConnectDb.IsEnabled = true;
                 Button_DisconnectDb.IsEnabled = false;
+                TextBox_DbIPAddress.IsEnabled = true;
+                TextBox_DbPortNo.IsEnabled = true;
             }          
         }
         public void StopDb()
@@ -155,6 +174,8 @@ namespace ServerApp.View
                 Main_ViewModel.DbStatus = "Niepodłączony";
                 Button_ConnectDb.IsEnabled = true;
                 Button_DisconnectDb.IsEnabled = false;
+                TextBox_DbIPAddress.IsEnabled = true;
+                TextBox_DbPortNo.IsEnabled = true;
             }
             catch (Exception ex)
             {
