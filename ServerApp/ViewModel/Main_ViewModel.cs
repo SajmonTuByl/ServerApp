@@ -12,6 +12,9 @@ namespace ServerApp.ViewModel
         private string serverIp;
         private string serverPort;
         private string serverStatus;
+
+        private string dbIp;
+        private string dbPort;
         private string dbStatus;
 
         private int selectedSensorParentId;
@@ -48,6 +51,24 @@ namespace ServerApp.ViewModel
             }
         }
 
+        public string DbIp
+        {
+            get => dbIp;
+            set
+            {
+                dbIp = value;
+                OnPropertyChanged("Db");
+            }
+        }
+        public string DbPort
+        {
+            get => dbPort;
+            set
+            {
+                dbPort = value;
+                OnPropertyChanged("DbPort");
+            }
+        }
         public string DbStatus
         {
             get => dbStatus;
@@ -84,8 +105,10 @@ namespace ServerApp.ViewModel
 
             ServerIp = "127.0.0.1";
             ServerPort = "11000";
-            ServerStatus = "test";
-            DbStatus = "";
+            ServerStatus = "...";
+            DbIp = "127.0.0.1";
+            DbPort = "3306"; //orcl
+            DbStatus = "...";
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

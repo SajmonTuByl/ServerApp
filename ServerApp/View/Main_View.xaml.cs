@@ -13,7 +13,6 @@ using System.Windows.Data;
 using System.Collections.ObjectModel;
 using System.Text.Json;
 using ServerApp.ViewModel;
-using Oracle.ManagedDataAccess.Client;
 
 namespace ServerApp.View
 {
@@ -24,7 +23,7 @@ namespace ServerApp.View
     {
         public static Main_ViewModel Main_ViewModel { get; set; }
         WebSocketServer wssv;
-        OracleConnection con;
+        MySql.Data.MySqlClient.MySqlConnection conn;
 
         public Main_View()
         {
@@ -127,17 +126,21 @@ namespace ServerApp.View
         public void StartDb()
         {
             Main_ViewModel.DbStatus = "Łączę...";
-            con = new OracleConnection();
-            string connectionString = "Data Source=192.168.167.2/orcl; User Id=student; Password=student;";
-            con.ConnectionString = connectionString;
+            string myConnectionString;
+
+            myConnectionString = "server=" + Main_ViewModel.DbIp + ";uid=TestUser;pwd=TestPassword;database=TestDb";
+
             try
             {
-                con.Open();
+                conn = new MySql.Data.MySqlClient.MySqlConnection();
+                conn.ConnectionString = myConnectionString;
+                conn.Open();
+
                 Main_ViewModel.DbStatus = "Podłączony";
                 Button_ConnectDb.IsEnabled = false;
                 Button_DisconnectDb.IsEnabled = true;
             }
-            catch (Exception ex)
+            catch (MySql.Data.MySqlClient.MySqlException ex)
             {
                 Main_ViewModel.DbStatus = ex.Message;
                 Button_ConnectDb.IsEnabled = true;
@@ -148,7 +151,7 @@ namespace ServerApp.View
         {
             try
             {
-                con.Close();
+                conn.Close();
                 Main_ViewModel.DbStatus = "Niepodłączony";
                 Button_ConnectDb.IsEnabled = true;
                 Button_DisconnectDb.IsEnabled = false;

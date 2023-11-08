@@ -115,8 +115,13 @@
             <Label Content="Baza danych "
                    VerticalContentAlignment="Center"/>
             <TextBox x:Name="TextBox_DbIPAddress"
-                     Text="{Binding Path=ServerIp, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                     Text="{Binding Path=DbIp, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                      Width="100"
+                     TextAlignment="Center"
+                     VerticalContentAlignment="Center"
+                     Margin="10,10,10,10" />
+            <TextBox x:Name="TextBox_DbPortNo"
+                     Text="{Binding Path=DbPort, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                      TextAlignment="Center"
                      VerticalContentAlignment="Center"
                      Margin="10,10,10,10" />
