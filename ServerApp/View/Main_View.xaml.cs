@@ -13,6 +13,7 @@ using System.Windows.Data;
 using System.Collections.ObjectModel;
 using System.Text.Json;
 using ServerApp.ViewModel;
+using MySql.Data.MySqlClient;
 
 namespace ServerApp.View
 {
@@ -22,8 +23,10 @@ namespace ServerApp.View
     public partial class Main_View
     {
         public static Main_ViewModel Main_ViewModel { get; set; }
+
         WebSocketServer wssv;
         MySql.Data.MySqlClient.MySqlConnection conn;
+        MySql.Data.MySqlClient.MySqlCommand cmd;
 
         public Main_View()
         {
@@ -151,9 +154,11 @@ namespace ServerApp.View
                 Button_DisconnectDb.IsEnabled = true;
                 TextBox_DbIPAddress.IsEnabled = false;
                 TextBox_DbPortNo.IsEnabled = false;
+
                 conn = new MySql.Data.MySqlClient.MySqlConnection();
                 conn.ConnectionString = myConnectionString;
                 conn.Open();
+                cmd = new MySql.Data.MySqlClient.MySqlCommand();
 
                 Main_ViewModel.DbStatus = "Podłączony";
             }
@@ -164,6 +169,18 @@ namespace ServerApp.View
                 Button_DisconnectDb.IsEnabled = false;
                 TextBox_DbIPAddress.IsEnabled = true;
                 TextBox_DbPortNo.IsEnabled = true;
+
+                /*
+                switch (ex.Number)
+                {
+                    case 0:
+                        MessageBox.Show("Cannot connect to server.  Contact administrator");
+                        break;
+                    case 1045:
+                        MessageBox.Show("Invalid username/password, please try again");
+                        break;
+                }
+                */
             }          
         }
         public void StopDb()
@@ -185,9 +202,58 @@ namespace ServerApp.View
 
         public void AddSensorToDb(int parentId, int sensorId, DateTime date, float value, string unit)
         {
+            //https://dev.mysql.com/doc/connector-net/en/connector-net-programming-prepared.html
+            try
+            {
+                string tableName = parentId.ToString() + "_" + sensorId.ToString();
 
+                cmd.Connection = conn;
+
+                cmd.CommandText = "INSERT INTO " + tableName + " VALUES(NULL, @date, @value, @unit)";
+                cmd.Prepare();
+
+                cmd.Parameters.AddWithValue("@date", date.ToString());
+                cmd.Parameters.AddWithValue("@value", value);
+                cmd.Parameters.AddWithValue("@unit", unit);
+
+                cmd.ExecuteNonQuery();
+
+                /*
+                for (int i = 1; i <= 1000; i++)
+                {
+                    cmd.Parameters["@number"].Value = i;
+                    cmd.Parameters["@text"].Value = "A string value";
+
+                    cmd.ExecuteNonQuery();
+                }
+                */
+            }
+            catch(Exception ex)
+            {
+                CreateTable(parentId, sensorId);
+            }
         }
 
+        public void CreateTable(int parentId, int sensorId)
+        {
+            try
+            {
+                string tableName = parentId.ToString() + "_" + sensorId.ToString();
+                
+                cmd.CommandText = 
+                    "CREATE TABLE " + tableName + " (" + "" +
+                    "Date DATE, 
+                    Value FLOAT,
+                    Unit VARCHAR(100)";"
+
+                cmd.Prepare();
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
         public void AddDeviceToDb(
             int deviceId, 
             string deviceName, 
