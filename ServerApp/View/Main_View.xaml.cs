@@ -14,6 +14,7 @@ using System.Collections.ObjectModel;
 using System.Text.Json;
 using ServerApp.ViewModel;
 using MySql.Data.MySqlClient;
+using System.Data;
 
 namespace ServerApp.View
 {
@@ -25,7 +26,7 @@ namespace ServerApp.View
         public static Main_ViewModel Main_ViewModel { get; set; }
 
         WebSocketServer wssv;
-        MySql.Data.MySqlClient.MySqlConnection conn;
+        static MySql.Data.MySqlClient.MySqlConnection conn;
         MySql.Data.MySqlClient.MySqlCommand cmd;
 
         public Main_View()
@@ -57,10 +58,11 @@ namespace ServerApp.View
                 // Dodawanie sensorów do SensorsLIst
                 foreach (var item in Main_ViewModel.DevicesList)
                 {
-                    foreach (var sensor1 in item.SensorsList)
+                    foreach (var sensor1 in item.SensorsList)  // Tutaj z jakiegoś powodu pojawia się zduplikowany sensor
                     {
                         if (Main_ViewModel.SensorsList.Count != 0)
                         {
+                            if (conn != null && conn.State == ConnectionState.Open) AddSensorToDb(sensor1.ParentId, sensor1.SensorId, sensor1.TimeStamp, sensor1.SensorValue, sensor1.SensorUnit, conn);
                             foreach (var sensor2 in Main_ViewModel.SensorsList)
                             {
                                 if (sensor1.SensorId == sensor2.SensorId && sensor1.ParentId == sensor2.ParentId)
@@ -200,22 +202,18 @@ namespace ServerApp.View
             }
         }
 
-        public void AddSensorToDb(int parentId, int sensorId, DateTime date, float value, string unit)
+        public static void AddSensorToDb(int parentId, int sensorId, DateTime date, float value, string unit, MySql.Data.MySqlClient.MySqlConnection conn)
         {
             //https://dev.mysql.com/doc/connector-net/en/connector-net-programming-prepared.html
             try
             {
                 string tableName = parentId.ToString() + "_" + sensorId.ToString();
+                
+                MySql.Data.MySqlClient.MySqlCommand cmd = new MySqlCommand();
 
                 cmd.Connection = conn;
 
-                cmd.CommandText = "INSERT INTO " + tableName + " VALUES(NULL, @date, @value, @unit)";
-                cmd.Prepare();
-
-                cmd.Parameters.AddWithValue("@date", date.ToString());
-                cmd.Parameters.AddWithValue("@value", value);
-                cmd.Parameters.AddWithValue("@unit", unit);
-
+                cmd.CommandText = "INSERT INTO " + tableName + " VALUES('" + date.ToString() + "', '" + value + "', '" + unit + "')";
                 cmd.ExecuteNonQuery();
 
                 /*
@@ -230,23 +228,22 @@ namespace ServerApp.View
             }
             catch(Exception ex)
             {
-                CreateTable(parentId, sensorId);
+                CreateTable(parentId, sensorId, conn);
             }
         }
 
-        public void CreateTable(int parentId, int sensorId)
+        public static void CreateTable(int parentId, int sensorId, MySql.Data.MySqlClient.MySqlConnection conn)
         {
             try
             {
                 string tableName = parentId.ToString() + "_" + sensorId.ToString();
-                
-                cmd.CommandText = 
-                    "CREATE TABLE " + tableName + " (" + "" +
-                    "Date DATE, 
-                    Value FLOAT,
-                    Unit VARCHAR(100)";"
+                MySql.Data.MySqlClient.MySqlCommand cmd = new MySqlCommand();
 
-                cmd.Prepare();
+                cmd.Connection = conn;
+                cmd.CommandText =
+                    "CREATE TABLE " + tableName + " (Date VARCHAR(20), Value FLOAT, Unit VARCHAR(10));";
+
+                cmd.ExecuteNonQuery();
 
             }
             catch (Exception ex)
