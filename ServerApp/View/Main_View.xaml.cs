@@ -58,11 +58,11 @@ namespace ServerApp.View
                 // Dodawanie sensorów do SensorsLIst
                 foreach (var item in Main_ViewModel.DevicesList)
                 {
-                    foreach (var sensor1 in item.SensorsList)  // Tutaj z jakiegoś powodu pojawia się zduplikowany sensor
+                    foreach (var sensor1 in item.SensorsList)
                     {
+                        if (conn != null && conn.State == ConnectionState.Open) AddSensorToDb(sensor1.ParentId, sensor1.SensorId, sensor1.TimeStamp, sensor1.SensorValue, conn);
                         if (Main_ViewModel.SensorsList.Count != 0)
                         {
-                            if (conn != null && conn.State == ConnectionState.Open) AddSensorToDb(sensor1.ParentId, sensor1.SensorId, sensor1.TimeStamp, sensor1.SensorValue, sensor1.SensorUnit, conn);
                             foreach (var sensor2 in Main_ViewModel.SensorsList)
                             {
                                 if (sensor1.SensorId == sensor2.SensorId && sensor1.ParentId == sensor2.ParentId)
@@ -85,6 +85,21 @@ namespace ServerApp.View
             StartServer();
         }
 
+        private void Button_Disconnect_Click(object sender, RoutedEventArgs e)
+        {
+            StopServer();
+        }
+
+        private void Button_DisconnectDb_Click(object sender, RoutedEventArgs e)
+        {
+            StopDb();
+        }
+
+        private void Button_ConnectDb_Click(object sender, RoutedEventArgs e)
+        {
+            StartDb();
+        }
+
         public static string GetLocalIPAddress()
         {
             var host = Dns.GetHostEntry(Dns.GetHostName());
@@ -96,11 +111,6 @@ namespace ServerApp.View
                 }
             }
             throw new Exception("No network adapters with an IPv4 address in the system!");
-        }
-
-        private void Button_Disconnect_Click(object sender, RoutedEventArgs e)
-        {
-            StopServer();
         }
 
         public void StartServer()
@@ -136,11 +146,12 @@ namespace ServerApp.View
                 Button_Connect.IsEnabled = true;
                 Button_Disconnect.IsEnabled = false;
                 Main_ViewModel.ServerStatus = "Nieuruchomiony";
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Main_ViewModel.ServerStatus = ex.Message;
             }
-            
+
         }
 
         public void StartDb()
@@ -183,7 +194,7 @@ namespace ServerApp.View
                         break;
                 }
                 */
-            }          
+            }
         }
         public void StopDb()
         {
@@ -202,7 +213,7 @@ namespace ServerApp.View
             }
         }
 
-        public static void AddSensorToDb(int parentId, int sensorId, DateTime date, float value, string unit, MySql.Data.MySqlClient.MySqlConnection conn)
+        public static void AddSensorToDb(int parentId, int sensorId, DateTime date, float value, MySql.Data.MySqlClient.MySqlConnection conn)
         {
             //https://dev.mysql.com/doc/connector-net/en/connector-net-programming-prepared.html
             try
@@ -213,7 +224,7 @@ namespace ServerApp.View
 
                 cmd.Connection = conn;
 
-                cmd.CommandText = "INSERT INTO " + tableName + " VALUES('" + date.ToString() + "', '" + value + "', '" + unit + "')";
+                cmd.CommandText = "INSERT INTO " + tableName + " VALUES('" + date.ToString() + "', '" + value + "')";
                 cmd.ExecuteNonQuery();
 
                 /*
@@ -241,7 +252,7 @@ namespace ServerApp.View
 
                 cmd.Connection = conn;
                 cmd.CommandText =
-                    "CREATE TABLE " + tableName + " (Date VARCHAR(20), Value FLOAT, Unit VARCHAR(10));";
+                    "CREATE TABLE " + tableName + " (Date VARCHAR(20), Value FLOAT)";
 
                 cmd.ExecuteNonQuery();
 
@@ -262,15 +273,7 @@ namespace ServerApp.View
            
         }
 
-        private void Button_DisconnectDb_Click(object sender, RoutedEventArgs e)
-        {
-            StopDb();
-        }
-
-        private void Button_ConnectDb_Click(object sender, RoutedEventArgs e)
-        {
-            StartDb();
-        }
+        
 
         //To check if you're connected or not:
         //System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();

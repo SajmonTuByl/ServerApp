@@ -51,7 +51,7 @@ namespace ServerApp.Model
                 if (item != null && item != "")
                     counter++;
             }
-
+            Device.SensorsList.Clear();
             for (int i = 0; i < counter; i++)
             {
                 sensorObj_Model.ParentId = (int)deserialization_Model.deviceId;
