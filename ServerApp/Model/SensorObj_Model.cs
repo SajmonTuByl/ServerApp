@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LiveCharts;
+using ServerApp.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -21,51 +23,59 @@ namespace ServerApp.Model
         private float sensorValue;
         private string sensorUnit;
 
+        private ChartValues<SensorSample> samples = new ChartValues<SensorSample>();
+
         public int ParentId
         {
             get { return parentId; }
-            set { parentId = value; OnPropertyChanged(); }
+            set { parentId = value; OnPropertyChanged("ParentId"); }
         }
         public string ParentName
         {
             get { return parentName; }
-            set { parentName = value; OnPropertyChanged(); }
+            set { parentName = value; OnPropertyChanged("ParentName"); }
         }
         public int SensorId 
         {
             get { return sensorId; } 
-            set { sensorId = value; OnPropertyChanged(); }
+            set { sensorId = value; OnPropertyChanged("SensorId"); }
         }
         public string SensorName
         {
             get { return sensorName; }
-            set { sensorName = value; OnPropertyChanged(); }
+            set { sensorName = value; OnPropertyChanged("SensorName"); }
         }
         public string SensorStatus
         { 
             get { return sensorStatus; }
-            set { sensorStatus = value; OnPropertyChanged(); }
+            set { sensorStatus = value; OnPropertyChanged("SensorStatus"); }
         }
         public string SensorType 
         {
             get { return sensorType; }
-            set { sensorType = value; OnPropertyChanged(); }
+            set { sensorType = value; OnPropertyChanged("SensorType"); }
         }
         public DateTime TimeStamp
         {
             get { return timeStamp; }
-            set { timeStamp = value; OnPropertyChanged(); }
+            set { timeStamp = value; OnPropertyChanged("TimeStamp"); }
         }
 
         public float SensorValue
         {
             get { return sensorValue; }
-            set { sensorValue = value; OnPropertyChanged(); }
+            set { sensorValue = value; OnPropertyChanged("SensorValue"); }
         }
         public string SensorUnit
         {
             get { return sensorUnit; }
-            set { sensorUnit = value; OnPropertyChanged(); }
+            set { sensorUnit = value; OnPropertyChanged("SensorUnit"); }
+        }
+
+        public ChartValues<SensorSample> Samples
+        {
+            get { return samples; }
+            set { samples = value; OnPropertyChanged("Samples"); }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

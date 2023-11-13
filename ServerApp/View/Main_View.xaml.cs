@@ -58,33 +58,35 @@ namespace ServerApp.View
                 // Dodawanie sensorów do SensorsLIst
                 foreach (var item in Main_ViewModel.DevicesList)
                 {
-                    foreach (var sensor1 in item.SensorsList)
+                    foreach (var receivedSensor in item.SensorsList)
                     {
                         // To trzeba tak zmodyfikować, aby każdy sensor miał swój zbiór danych
-                        Main_ViewModel.Samples.Add(new SensorSample { DateTime = sensor1.TimeStamp, Value = sensor1.SensorValue });
+                        Main_ViewModel.Samples.Add(new SensorSample { DateTime = receivedSensor.TimeStamp, Value = receivedSensor.SensorValue });
 
-                        if (conn != null && conn.State == ConnectionState.Open) AddSensorToDb(sensor1.ParentId, sensor1.SensorId, sensor1.TimeStamp, sensor1.SensorValue, conn);
+                        if (conn != null && conn.State == ConnectionState.Open) AddSensorToDb(receivedSensor.ParentId, receivedSensor.SensorId, receivedSensor.TimeStamp, receivedSensor.SensorValue, conn);
+                        
                         if (Main_ViewModel.SensorsList.Count != 0)
                         {
-                            foreach (var sensor2 in Main_ViewModel.SensorsList)
+                            foreach (var sensor in Main_ViewModel.SensorsList)
                             {
-                                if (sensor1.SensorId == sensor2.SensorId && sensor1.ParentId == sensor2.ParentId)
+                                // Jeżeli SensorId i ParentId nowego są takie same jak już istniejącego
+                                if (receivedSensor.SensorId == sensor.SensorId && receivedSensor.ParentId == sensor.ParentId)
                                 {
-                                    // Tutaj trzeba zrobić aktualizację pól
-                                    // Do SensorObj_Model dodać ChartValues<SensorSample> Samples
-                                    // Samples.Add(new SensorSample { DateTime = sensor1.TimeStamp, Value = sensor1.SensorValue });
+                                    // to zauktualizuj tylko wartość i znacznik czasu
+                                    sensor.SensorValue = receivedSensor.SensorValue;
+                                    sensor.TimeStamp = receivedSensor.TimeStamp;
+
+                                    // i dodaj te wartości również do zbioru punktów do rysowania wykresu
+                                    sensor.Samples.Add(new SensorSample { DateTime = receivedSensor.TimeStamp, Value = receivedSensor.SensorValue });
 
                                     // Autoaktualizacja wykresu - IChartEntity zamiast mappera
                                     //https://github.com/beto-rodriguez/LiveCharts2/blob/master/docs/overview/1.5.mappers.md
                                     //https://github.com/beto-rodriguez/LiveCharts2/tree/master/samples/WPFSample/Lines
-
-                                    Main_ViewModel.SensorsList.Remove(sensor2);
-                                    Main_ViewModel.SensorsList.Add(sensor1);
                                     break;
                                 }
                             }
                         }
-                        else Main_ViewModel.SensorsList.Add(sensor1);
+                        else Main_ViewModel.SensorsList.Add(receivedSensor);
                     }
                 }
             });
