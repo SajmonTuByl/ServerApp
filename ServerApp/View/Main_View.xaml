@@ -4,13 +4,20 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ServerApp.View"
+        xmlns:vm="clr-namespace:ServerApp.ViewModel"
         xmlns:z="clr-namespace:ServerApp"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         mc:Ignorable="d"
         Height="auto" Width="auto">
+
+    <!--
+    <Border.DataContext>
+        <vm:Main_ViewModel/>
+    </Border.DataContext>
+    -->
+    
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
@@ -20,16 +27,10 @@
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="650"></ColumnDefinition>
-            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <!--
-        <Grid.DataContext>
-            <z:EnvironmentalVariables/>
-        </Grid.DataContext>
--->
-        
         <Label Content="Podłączone urządzenia"
                Grid.Column="0"
                Grid.Row="0" />
@@ -77,7 +78,7 @@
                   HorizontalAlignment="Center">
         </DataGrid>
         -->
-        <StackPanel Grid.Row="6"
+        <StackPanel Grid.Row="4"
                     Grid.ColumnSpan="2"
                     Orientation="Horizontal">
             <Label Content="Serwer "
@@ -109,7 +110,7 @@
                    Margin="10,10,10,10" />
         </StackPanel>
         
-        <StackPanel Grid.Row="7"
+        <StackPanel Grid.Row="5"
                     Grid.ColumnSpan="2"
                     Orientation="Horizontal">
             <Label Content="Baza danych "
@@ -143,7 +144,21 @@
                    Margin="10,10,10,10" />
         </StackPanel>
 
-
+        <StackPanel Grid.Row="0"
+                    Grid.Column="1"
+                    Grid.RowSpan="6">
+            <lvc:CartesianChart x:Name="chart" 
+                            Padding="0,30,10,10"
+                            Width="750"
+                            Height="320"
+                            HorizontalAlignment="Left"
+                            Series="{Binding Series}">
+                <lvc:CartesianChart.AxisX>
+                    <lvc:Axis LabelFormatter="{Binding Formatter}"></lvc:Axis>
+                </lvc:CartesianChart.AxisX>
+            </lvc:CartesianChart>
+        </StackPanel>
+        
 
     </Grid>
     </Border>

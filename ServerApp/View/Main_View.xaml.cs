@@ -60,6 +60,9 @@ namespace ServerApp.View
                 {
                     foreach (var sensor1 in item.SensorsList)
                     {
+                        // To trzeba tak zmodyfikować, aby każdy sensor miał swój zbiór danych
+                        Main_ViewModel.Samples.Add(new SensorSample { DateTime = sensor1.TimeStamp, Value = sensor1.SensorValue });
+
                         if (conn != null && conn.State == ConnectionState.Open) AddSensorToDb(sensor1.ParentId, sensor1.SensorId, sensor1.TimeStamp, sensor1.SensorValue, conn);
                         if (Main_ViewModel.SensorsList.Count != 0)
                         {
@@ -67,6 +70,14 @@ namespace ServerApp.View
                             {
                                 if (sensor1.SensorId == sensor2.SensorId && sensor1.ParentId == sensor2.ParentId)
                                 {
+                                    // Tutaj trzeba zrobić aktualizację pól
+                                    // Do SensorObj_Model dodać ChartValues<SensorSample> Samples
+                                    // Samples.Add(new SensorSample { DateTime = sensor1.TimeStamp, Value = sensor1.SensorValue });
+
+                                    // Autoaktualizacja wykresu - IChartEntity zamiast mappera
+                                    //https://github.com/beto-rodriguez/LiveCharts2/blob/master/docs/overview/1.5.mappers.md
+                                    //https://github.com/beto-rodriguez/LiveCharts2/tree/master/samples/WPFSample/Lines
+
                                     Main_ViewModel.SensorsList.Remove(sensor2);
                                     Main_ViewModel.SensorsList.Add(sensor1);
                                     break;
