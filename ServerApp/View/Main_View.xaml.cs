@@ -86,7 +86,16 @@ namespace ServerApp.View
                                 }
                             }
                         }
-                        else Main_ViewModel.SensorsList.Add(receivedSensor);
+                        // Jeżeli nie ma na liście rzadnego czujnika, to po prostu dodaj go w całości
+                        if (Main_ViewModel.SensorsList.Count == 0)
+                        {
+                            Main_ViewModel.SensorsList.Add(receivedSensor);
+                            foreach (var sensor in Main_ViewModel.SensorsList)
+                            {
+                                sensor.Samples.Add(new SensorSample { DateTime = receivedSensor.TimeStamp, Value = receivedSensor.SensorValue });
+                            }
+                        }
+
                     }
                 }
             });
