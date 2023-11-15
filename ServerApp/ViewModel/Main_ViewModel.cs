@@ -25,6 +25,138 @@ namespace ServerApp.ViewModel
         public double Value { get; set; }
     }
 
+    public class Date : INotifyPropertyChanged
+    {
+        private string fromDate;
+        private string toDate;
+        private string fromHours;
+        private string toHours;
+        private string fromMinutes;
+        private string toMinutes;
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        public string FromDate 
+        {
+            get
+            { 
+                return fromDate;
+            }
+            set
+            {
+                fromDate = value;
+                OnPropertyChanged("FromDate");
+            }
+        }
+        public string ToDate
+        {
+            get
+            {
+                return toDate;
+            }
+            set
+            {
+                toDate = value;
+                OnPropertyChanged("ToDate");
+            }
+        }
+        public string FromHours
+        {
+            get
+            {
+                return fromHours;
+            }
+            set
+            {
+
+                if (Int16.TryParse(value, out short val) && val>=0 && val <=24)
+                {
+                    fromHours = val.ToString();
+                }
+                OnPropertyChanged("FromHours");
+            }
+        }
+        public string ToHours
+        {
+            get
+            {
+                return toHours;
+            }
+            set
+            {
+
+                if (Int16.TryParse(value, out short val) && val >= 0 && val <= 24)
+                {
+                    toHours = val.ToString();
+                }
+                OnPropertyChanged("ToHours");
+            }
+        }
+        public string FromMinutes
+        {
+            get
+            {
+                return fromMinutes;
+            }
+            set
+            {
+
+                if (Int16.TryParse(value, out short val) && val >= 0 && val <= 24)
+                {
+                    fromMinutes = val.ToString();
+                }
+                OnPropertyChanged("FromMinutes");
+            }
+        }
+        public string ToMinutes
+        {
+            get
+            {
+                return toMinutes;
+            }
+            set
+            {
+
+                if (Int16.TryParse(value, out short val) && val >= 0 && val <= 24)
+                {
+                    toMinutes = val.ToString();
+                }
+                OnPropertyChanged("ToMinutes");
+            }
+        }
+
+        public DateTime FromDateTime { get; set; }
+        public DateTime ToDateTime { get; set; }
+
+        public Date()
+        {
+            FromDateTime = DateTime.Now;
+            ToDateTime = DateTime.Now;
+
+            FromDate = FromDateTime.Date.ToString();
+            ToDate = ToDateTime.Date.ToString();
+            FromHours = FromDateTime.Hour.ToString();
+            ToHours = ToDateTime.Hour.ToString();
+            FromMinutes = FromDateTime.Minute.ToString();
+            ToMinutes = ToDateTime.Minute.ToString();
+        }
+        
+        public DateTime GetFromDateTime()
+        {
+            FromDateTime = DateTime.Parse(FromDate.ToString() + " " + FromHours + ":" + FromMinutes);
+            return FromDateTime;
+        }
+        public DateTime GetToDateTime()
+        {
+            ToDateTime = DateTime.Parse(ToDate.ToString() + " " + ToHours + ":" + ToMinutes);
+            return ToDateTime;
+        }
+    }
+
     public class Main_ViewModel : INotifyPropertyChanged
     {
         private string serverIp;
