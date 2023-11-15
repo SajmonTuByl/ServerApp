@@ -60,9 +60,6 @@ namespace ServerApp.View
                 {
                     foreach (var receivedSensor in item.SensorsList)
                     {
-                        // To trzeba tak zmodyfikować, aby każdy sensor miał swój zbiór danych
-                        Main_ViewModel.Samples.Add(new SensorSample { DateTime = receivedSensor.TimeStamp, Value = receivedSensor.SensorValue });
-
                         if (conn != null && conn.State == ConnectionState.Open) AddSensorToDb(receivedSensor.ParentId, receivedSensor.SensorId, receivedSensor.TimeStamp, receivedSensor.SensorValue, conn);
                         
                         if (Main_ViewModel.SensorsList.Count != 0)

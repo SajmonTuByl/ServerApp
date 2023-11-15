@@ -15,6 +15,7 @@ using LiveCharts;
 using LiveCharts.Wpf;
 using System.Windows.Media;
 using LiveCharts.Configurations;
+using Google.Protobuf.WellKnownTypes;
 
 namespace ServerApp.ViewModel
 {
@@ -34,8 +35,8 @@ namespace ServerApp.ViewModel
         private string dbPort;
         private string dbStatus;
 
-        private int selectedSensorParentId;
-        private int selectedSensorSensorId;
+        private SensorObj_Model selectedSensor;
+        private LineSeries series1;
 
         public ObservableCollection<DeviceObj_Model> DevicesList { get; set; }
         public ObservableCollection<SensorObj_Model> SensorsList { get; set; }
@@ -96,28 +97,36 @@ namespace ServerApp.ViewModel
             }
         }
 
-        public int SelectedSensorParentId
+        public SensorObj_Model SelectedSensor
         {
-            get => selectedSensorParentId;
+            get => selectedSensor;
             set
             {
-                selectedSensorParentId = value;
-                OnPropertyChanged("SelectedSensorParentId");
+                selectedSensor = value;
+                OnPropertyChanged("SelectedSensor");
+                
+                if (selectedSensor.SensorName != null && selectedSensor.Samples != null)
+                {
+                    Series1.Title = SelectedSensor.SensorName;
+                    Series1.Values = SelectedSensor.Samples;
+                }
+                
             }
         }
-        public int SelectedSensorSensorId
+        public LineSeries Series1
         {
-            get => selectedSensorSensorId;
+            get => series1;
             set
             {
-                selectedSensorSensorId = value;
-                OnPropertyChanged("SelectedSensorSensorId");
+                series1 = value;
+                OnPropertyChanged("Series1");
             }
         }
 
         // Formatowanie osi X
         //public Func<double, string> Formatter { get; set; } = value => new DateTime((long)value).ToString("HH:mm");
-        public Func<double, string> Formatter { get; set; } = value => new DateTime((long)value).ToString("d");
+        public Func<double, string> XFormatter { get; set; } = value => new DateTime((long)value).ToString("T");
+        public Func<double, string> YFormatter { get; set; } = value => value.ToString("N2");
 
         // Zbiór serii, które zostaną pokazane na wykresie
         public SeriesCollection Series { get; set; }
@@ -125,18 +134,29 @@ namespace ServerApp.ViewModel
         // Zbiór wartości zmierzonych próbek
         // Do zbioru serii SeriesCollection należy dodać nową serię, do której podpinamy poniższy zbiór wartości próbek
         public ChartValues<SensorSample> Samples { get; set; } = new ChartValues<SensorSample>();
+
         /* Dodawanie próbek
-           Samples.Add(new SensorSample
-                {
-                    DateTime = DateTime.Now,
-                    Value = 5
-                });
-        */
+Samples.Add(new SensorSample
+{
+DateTime = DateTime.Now,
+Value = 5
+});
+*/
 
         public Main_ViewModel()
         {
             DevicesList = new ObservableCollection<DeviceObj_Model>();
             SensorsList = new ObservableCollection<SensorObj_Model>();
+            SelectedSensor = new SensorObj_Model();
+            YFormatter = value => value.ToString("N2") + SelectedSensor.SensorUnit;
+
+            Series1 = new LineSeries
+            {
+                Title = SelectedSensor.SensorName,
+                Values = SelectedSensor.Samples,
+                Fill = Brushes.Transparent,
+                //LabelPoint = point => point.Y + "K"
+            };
 
             var dayConfig = Mappers.Xy<SensorSample>()
               .X(dateModel => dateModel.DateTime.Ticks) // / TimeSpan.FromDays(1).Ticks)
@@ -144,12 +164,9 @@ namespace ServerApp.ViewModel
 
             Series = new SeriesCollection(dayConfig)
             {
-                new LineSeries
-                {
-                    Title = "Google Rank",
-                    Values = Samples,
-                    Fill = Brushes.Transparent,
-                },
+                Series1,
+                //Series2,
+                //Series3...
             };
 
             ServerIp = "127.0.0.1";
