@@ -36,7 +36,6 @@ namespace ServerApp.Model
         public void DeserializeData(string data)
         {
             Deserialization_Model? deserialization_Model = JsonSerializer.Deserialize<Deserialization_Model>(data);
-            SensorObj_Model sensorObj_Model = new SensorObj_Model();
 
             Device.DeviceId = (int)(deserialization_Model.deviceId != null ? deserialization_Model.deviceId : 0);
             Device.DeviceName = deserialization_Model.deviceName != null ? deserialization_Model.deviceName : "";
@@ -54,6 +53,7 @@ namespace ServerApp.Model
             Device.SensorsList.Clear();
             for (int i = 0; i < counter; i++)
             {
+                SensorObj_Model sensorObj_Model = new SensorObj_Model();
                 sensorObj_Model.ParentId = (int)deserialization_Model.deviceId;
                 sensorObj_Model.ParentName = deserialization_Model.deviceName;
                 sensorObj_Model.SensorId = deserialization_Model.sensorId[i];

@@ -86,10 +86,15 @@ namespace ServerApp.View
                         // Jeżeli nie ma na liście rzadnego czujnika, to po prostu dodaj go w całości
                         if (Main_ViewModel.SensorsList.Count == 0)
                         {
-                            Main_ViewModel.SensorsList.Add(receivedSensor);
-                            foreach (var sensor in Main_ViewModel.SensorsList)
+                            foreach (var receivedSensor2 in item.SensorsList)
                             {
-                                sensor.Samples.Add(new SensorSample { DateTime = receivedSensor.TimeStamp, Value = receivedSensor.SensorValue });
+                                Main_ViewModel.SensorsList.Add(receivedSensor2);
+                                /*
+                                foreach (var sensor in Main_ViewModel.SensorsList)
+                                {
+                                    sensor.Samples.Add(new SensorSample { DateTime = receivedSensor2.TimeStamp, Value = receivedSensor2.SensorValue });
+                                }
+                                */
                             }
                         }
 
@@ -243,7 +248,7 @@ namespace ServerApp.View
 
                 cmd.Connection = conn;
 
-                cmd.CommandText = "INSERT INTO " + tableName + " VALUES('" + date.ToString() + "', '" + value + "')";
+                cmd.CommandText = "INSERT INTO " + tableName + " VALUES('" + date.ToString() + "', '" + value.ToString().Replace(",", ".") + "')";
                 cmd.ExecuteNonQuery();
 
                 /*
@@ -271,7 +276,7 @@ namespace ServerApp.View
 
                 cmd.Connection = conn;
                 cmd.CommandText =
-                    "CREATE TABLE " + tableName + " (Date VARCHAR(20), Value FLOAT)";
+                    "CREATE TABLE " + tableName + " (Date VARCHAR(20), Value DECIMAL(12,2))";
 
                 cmd.ExecuteNonQuery();
 
