@@ -27,12 +27,14 @@ namespace ServerApp.ViewModel
 
     public class Date : INotifyPropertyChanged
     {
-        private string fromDate;
-        private string toDate;
+        private DateTime fromDate;
+        private DateTime toDate;
         private string fromHours;
         private string toHours;
         private string fromMinutes;
         private string toMinutes;
+        private string fromSeconds;
+        private string toSeconds;
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string name = null)
@@ -40,7 +42,7 @@ namespace ServerApp.ViewModel
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-        public string FromDate 
+        public DateTime FromDate 
         {
             get
             { 
@@ -52,7 +54,7 @@ namespace ServerApp.ViewModel
                 OnPropertyChanged("FromDate");
             }
         }
-        public string ToDate
+        public DateTime ToDate
         {
             get
             {
@@ -105,7 +107,7 @@ namespace ServerApp.ViewModel
             set
             {
 
-                if (Int16.TryParse(value, out short val) && val >= 0 && val <= 24)
+                if (Int16.TryParse(value, out short val) && val >= 0 && val <= 60)
                 {
                     fromMinutes = val.ToString();
                 }
@@ -121,11 +123,43 @@ namespace ServerApp.ViewModel
             set
             {
 
-                if (Int16.TryParse(value, out short val) && val >= 0 && val <= 24)
+                if (Int16.TryParse(value, out short val) && val >= 0 && val <= 60)
                 {
                     toMinutes = val.ToString();
                 }
                 OnPropertyChanged("ToMinutes");
+            }
+        }
+        public string FromSeconds
+        {
+            get
+            {
+                return fromSeconds;
+            }
+            set
+            {
+
+                if (Int16.TryParse(value, out short val) && val >= 0 && val <= 60)
+                {
+                    fromSeconds = val.ToString();
+                }
+                OnPropertyChanged("FromSeconds");
+            }
+        }
+        public string ToSeconds
+        {
+            get
+            {
+                return toSeconds;
+            }
+            set
+            {
+
+                if (Int16.TryParse(value, out short val) && val >= 0 && val <= 60)
+                {
+                    toSeconds = val.ToString();
+                }
+                OnPropertyChanged("ToSeconds");
             }
         }
 
@@ -137,22 +171,24 @@ namespace ServerApp.ViewModel
             FromDateTime = DateTime.Now;
             ToDateTime = DateTime.Now;
 
-            FromDate = FromDateTime.Date.ToString();
-            ToDate = ToDateTime.Date.ToString();
+            FromDate = FromDateTime.Date;
+            ToDate = ToDateTime.Date;
             FromHours = FromDateTime.Hour.ToString();
             ToHours = ToDateTime.Hour.ToString();
             FromMinutes = FromDateTime.Minute.ToString();
             ToMinutes = ToDateTime.Minute.ToString();
+            FromSeconds = FromDateTime.Second.ToString();
+            ToSeconds = ToDateTime.Second.ToString();
         }
         
         public DateTime GetFromDateTime()
         {
-            FromDateTime = DateTime.Parse(FromDate.ToString() + " " + FromHours + ":" + FromMinutes);
+            FromDateTime = DateTime.Parse(FromDate.ToString("dd/MM/yyyy") + " " + FromHours + ":" + FromMinutes + ":" + FromSeconds);
             return FromDateTime;
         }
         public DateTime GetToDateTime()
         {
-            ToDateTime = DateTime.Parse(ToDate.ToString() + " " + ToHours + ":" + ToMinutes);
+            ToDateTime = DateTime.Parse(ToDate.ToString("dd/MM/yyyy") + " " + ToHours + ":" + ToMinutes + ":" + ToSeconds);
             return ToDateTime;
         }
     }
@@ -169,6 +205,9 @@ namespace ServerApp.ViewModel
 
         private SensorObj_Model selectedSensor;
         private LineSeries series1;
+        private int samplesCount = 100;
+        private bool chartAutoUpdate = true;
+        private Date selectedDateRange = new Date();
 
         public ObservableCollection<DeviceObj_Model> DevicesList { get; set; }
         public ObservableCollection<SensorObj_Model> SensorsList { get; set; }
@@ -266,6 +305,38 @@ namespace ServerApp.ViewModel
         // Zbiór wartości zmierzonych próbek
         // Do zbioru serii SeriesCollection należy dodać nową serię, do której podpinamy poniższy zbiór wartości próbek
         public ChartValues<SensorSample> Samples { get; set; } = new ChartValues<SensorSample>();
+        public int SamplesCount
+        {
+            get => samplesCount;
+            set
+            {
+                if (value.GetType() == typeof(int) && value>0)
+                {
+                    samplesCount = value;
+                    OnPropertyChanged("SamplesCount");
+                }
+            }
+        }
+
+        public bool ChartAutoUpdate
+        {
+            get => chartAutoUpdate;
+            set
+            {
+                chartAutoUpdate = value;
+                OnPropertyChanged("ChartAutoUpdate");
+            }
+        }
+
+        public Date SelectedDateRange
+        {
+            get => selectedDateRange;
+            set
+            {
+                selectedDateRange = value;
+                OnPropertyChanged("SelectedDateRange");
+            }
+        }
 
         /* Dodawanie próbek
 Samples.Add(new SensorSample

@@ -133,17 +133,31 @@
                         Margin="0,30,0,20">
                 <CheckBox Content="Automatyczna aktualizacja"
                           VerticalAlignment="Center"
-                          Margin="0,0,40,0"/>
+                          IsChecked="{Binding Path=ChartAutoUpdate, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                          Margin="0,0,20,0"/>
+                <Label Content="Liczba punktów pomiarowych na wykresie:  " />
+                <TextBox x:Name="pointsNo"
+                         Text="{Binding Path=SamplesCount, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                         Width="40" 
+                         Margin="0,0,30,0"
+                         VerticalContentAlignment="Center"
+                         HorizontalContentAlignment="Center" />
+                <Button x:Name="cleanGraph" Content="  Wyczyść wykres  "
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Right"
+                        Click="cleanGraph_Click"
+                        Margin="0,0,10,0"/>
                 <Button x:Name="exportData" Content="  Eksportuj dane do pliku  "
                         VerticalAlignment="Center"
-                        HorizontalAlignment="Right"/>
+                        HorizontalAlignment="Right"
+                        Click="exportData_Click"/>
             </StackPanel>
             
             <StackPanel Orientation="Horizontal">
                 <Label Content="Od:  " />
                 <DatePicker x:Name="dateFrom"
                             SelectedDateFormat="Short"
-                            SelectedDate="3/23/09"
+                            SelectedDate="{Binding Path=SelectedDateRange.FromDate, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                             DisplayDateStart="1/01/09"
                             DisplayDateEnd="12/31/09"
                             FirstDayOfWeek="Monday"
@@ -152,11 +166,20 @@
                             HorizontalContentAlignment="Center"/>
                 <TextBox x:Name="hoursFrom"
                          Width="40"
+                         Text="{Binding Path=SelectedDateRange.FromHours, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                          VerticalContentAlignment="Center"
                          HorizontalContentAlignment="Center" />
                 <Label Content=":" />
                 <TextBox x:Name="minutesFrom"
                          Width="40" 
+                         Text="{Binding Path=SelectedDateRange.FromMinutes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                         Margin="0,0,0,0"
+                         VerticalContentAlignment="Center"
+                         HorizontalContentAlignment="Center" />
+                <Label Content=":" />
+                <TextBox x:Name="secondsFrom"
+                         Width="40"
+                         Text="{Binding Path=SelectedDateRange.FromSeconds, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                          Margin="0,0,30,0"
                          VerticalContentAlignment="Center"
                          HorizontalContentAlignment="Center" />
@@ -164,7 +187,7 @@
                 <Label Content="Do:  "/>
                 <DatePicker x:Name="dateTo"
                             SelectedDateFormat="Short"
-                            SelectedDate="3/23/09"
+                            SelectedDate="{Binding Path=SelectedDateRange.ToDate, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                             DisplayDateStart="1/01/09"
                             DisplayDateEnd="12/31/09"
                             FirstDayOfWeek="Monday"
@@ -173,16 +196,26 @@
                             HorizontalContentAlignment="Center" />
                 <TextBox x:Name="hoursTo"
                          Width="40"
+                         Text="{Binding Path=SelectedDateRange.ToHours, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                          VerticalContentAlignment="Center"
                          HorizontalContentAlignment="Center" />
                 <Label Content=":" />
                 <TextBox x:Name="minutesTo"
                          Width="40"
+                         Text="{Binding Path=SelectedDateRange.ToMinutes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                         VerticalContentAlignment="Center"
+                         HorizontalContentAlignment="Center" />
+                <Label Content=":" />
+                <TextBox x:Name="secondsTo"
+                         Width="40"
+                         Text="{Binding Path=SelectedDateRange.ToSeconds, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                          VerticalContentAlignment="Center"
                          HorizontalContentAlignment="Center" />
 
                 <Button x:Name="getDataFromDb"
-                        Content=" Odśwież "
+                        Content=" Pobierz "
+                        IsEnabled="false"
+                        Click="getDataFromDb_Click"
                         Margin="20,0,0,0"/>
             </StackPanel>
                 

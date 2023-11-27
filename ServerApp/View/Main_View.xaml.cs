@@ -15,6 +15,7 @@ using System.Text.Json;
 using ServerApp.ViewModel;
 using MySql.Data.MySqlClient;
 using System.Data;
+using LiveCharts.Wpf;
 
 namespace ServerApp.View
 {
@@ -43,17 +44,18 @@ namespace ServerApp.View
             var dispatcher = Application.Current.Dispatcher;
             dispatcher.Invoke(() =>
             {
-                // Dodawanie urządzeń do DevicesList
-                if (Main_ViewModel.DevicesList.Count == 0) Main_ViewModel.DevicesList.Add(device);
+                bool foundDevice = false;
                 foreach (var item in Main_ViewModel.DevicesList)
                 {
                     if (item.DeviceId == device.DeviceId)
                     {
                         Main_ViewModel.DevicesList.Remove(item);
                         Main_ViewModel.DevicesList.Add(device);
+                        foundDevice = true;
                         break;
                     }
                 }
+                if (!foundDevice) Main_ViewModel.DevicesList.Add(device);
 
                 // Dodawanie sensorów do SensorsLIst
                 foreach (var item in Main_ViewModel.DevicesList)
@@ -61,9 +63,7 @@ namespace ServerApp.View
                     foreach (var receivedSensor in item.SensorsList)
                     {
                         if (conn != null && conn.State == ConnectionState.Open) AddSensorToDb(receivedSensor.ParentId, receivedSensor.SensorId, receivedSensor.TimeStamp, receivedSensor.SensorValue, conn);
-                        
-                        if (Main_ViewModel.SensorsList.Count != 0)
-                        {
+                            bool foundSensor = false;
                             foreach (var sensor in Main_ViewModel.SensorsList)
                             {
                                 // Jeżeli SensorId i ParentId nowego są takie same jak już istniejącego
@@ -74,30 +74,20 @@ namespace ServerApp.View
                                     sensor.TimeStamp = receivedSensor.TimeStamp;
 
                                     // i dodaj te wartości również do zbioru punktów do rysowania wykresu
-                                    sensor.Samples.Add(new SensorSample { DateTime = receivedSensor.TimeStamp, Value = receivedSensor.SensorValue });
+                                    // ale najpierw sprawdź, czy auto update jest true
+                                    // i czy nie ma za dużo próbek do rysowania wykresu, tj. więcej niż Main_ViewModel.SamplesNo
+                                    if (Main_ViewModel.ChartAutoUpdate == true)
+                                    {
+                                        int oldSamples = sensor.Samples.Count - Main_ViewModel.SamplesCount;
+                                        for (int i = 0; i < oldSamples; i++) sensor.Samples.RemoveAt(0);
 
-                                    // Autoaktualizacja wykresu - IChartEntity zamiast mappera
-                                    //https://github.com/beto-rodriguez/LiveCharts2/blob/master/docs/overview/1.5.mappers.md
-                                    //https://github.com/beto-rodriguez/LiveCharts2/tree/master/samples/WPFSample/Lines
+                                        sensor.Samples.Add(new SensorSample { DateTime = receivedSensor.TimeStamp, Value = receivedSensor.SensorValue });
+                                    }
+                                    foundSensor = true;
                                     break;
                                 }
                             }
-                        }
-                        // Jeżeli nie ma na liście rzadnego czujnika, to po prostu dodaj go w całości
-                        if (Main_ViewModel.SensorsList.Count == 0)
-                        {
-                            foreach (var receivedSensor2 in item.SensorsList)
-                            {
-                                Main_ViewModel.SensorsList.Add(receivedSensor2);
-                                /*
-                                foreach (var sensor in Main_ViewModel.SensorsList)
-                                {
-                                    sensor.Samples.Add(new SensorSample { DateTime = receivedSensor2.TimeStamp, Value = receivedSensor2.SensorValue });
-                                }
-                                */
-                            }
-                        }
-
+                            if (!foundSensor) Main_ViewModel.SensorsList.Add(receivedSensor); ;
                     }
                 }
             });
@@ -198,6 +188,7 @@ namespace ServerApp.View
                 cmd = new MySql.Data.MySqlClient.MySqlCommand();
 
                 Main_ViewModel.DbStatus = "Podłączony";
+                getDataFromDb.IsEnabled = true;
             }
             catch (MySql.Data.MySqlClient.MySqlException ex)
             {
@@ -230,6 +221,7 @@ namespace ServerApp.View
                 Button_DisconnectDb.IsEnabled = false;
                 TextBox_DbIPAddress.IsEnabled = true;
                 TextBox_DbPortNo.IsEnabled = true;
+                getDataFromDb.IsEnabled = false;
             }
             catch (Exception ex)
             {
@@ -239,7 +231,6 @@ namespace ServerApp.View
 
         public static void AddSensorToDb(int parentId, int sensorId, DateTime date, float value, MySql.Data.MySqlClient.MySqlConnection conn)
         {
-            //https://dev.mysql.com/doc/connector-net/en/connector-net-programming-prepared.html
             try
             {
                 string tableName = parentId.ToString() + "_" + sensorId.ToString();
@@ -248,18 +239,8 @@ namespace ServerApp.View
 
                 cmd.Connection = conn;
 
-                cmd.CommandText = "INSERT INTO " + tableName + " VALUES('" + date.ToString() + "', '" + value.ToString().Replace(",", ".") + "')";
+                cmd.CommandText = "INSERT INTO " + tableName + " VALUES('" + date.ToString("s") + "', '" + value.ToString().Replace(",", ".") + "')";
                 cmd.ExecuteNonQuery();
-
-                /*
-                for (int i = 1; i <= 1000; i++)
-                {
-                    cmd.Parameters["@number"].Value = i;
-                    cmd.Parameters["@text"].Value = "A string value";
-
-                    cmd.ExecuteNonQuery();
-                }
-                */
             }
             catch(Exception ex)
             {
@@ -276,7 +257,7 @@ namespace ServerApp.View
 
                 cmd.Connection = conn;
                 cmd.CommandText =
-                    "CREATE TABLE " + tableName + " (Date VARCHAR(20), Value DECIMAL(12,2))";
+                    "CREATE TABLE " + tableName + " (DateStamp DateTime, Value DECIMAL(12,2))";
 
                 cmd.ExecuteNonQuery();
 
@@ -286,19 +267,72 @@ namespace ServerApp.View
                 MessageBox.Show(ex.Message);
             }
         }
-        public void AddDeviceToDb(
-            int deviceId, 
-            string deviceName, 
-            string deviceIpAddress, 
-            string deviceStatus, 
-            int deviceUpdateInterval, 
-            int deviceBatteryLevel)
-        {
-           
+
+        public void GetDataFromDb(int parentId, int sensorId, DateTime dateFrom, DateTime dateTo, MySql.Data.MySqlClient.MySqlConnection conn)
+        { 
+            try
+            {
+                string tableName = parentId.ToString() + "_" + sensorId.ToString();
+                MySql.Data.MySqlClient.MySqlCommand cmd = new MySqlCommand();
+                cmd.Connection = conn;
+
+                cmd.CommandText = "SELECT * FROM " + tableName + " WHERE DateStamp BETWEEN '" + 
+                    dateFrom.ToString("yyyy-MM-dd HH:mm:ss") + "' AND '" + 
+                    dateTo.ToString("yyyy-MM-dd HH:mm:ss") + "'";
+
+                /*
+                cmd.CommandText = "SELECT * FROM 1_1 WHERE DateStamp BETWEEN '@dateFrom' AND '@dateTo'";
+                cmd.Parameters.AddWithValue("@dateFrom", dateFrom.ToString("yyyy’-‘MM’-‘dd’T’HH’:’mm’:’ss"));
+                cmd.Parameters.AddWithValue("@dateTo", dateTo.ToString("yyyy’-‘MM’-‘dd’T’HH’:’mm’:’ss"));
+                */
+                MySqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    DateTime date = reader.GetDateTime(reader.GetOrdinal("DateStamp"));
+                    float value = reader.GetFloat(reader.GetOrdinal("Value"));
+                    Main_ViewModel.SelectedSensor.Samples.Add(new SensorSample { DateTime = date, Value = value });
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
-        
+        public void ExportData (LineSeries series)
+        {
+            
+        }
 
+        private void exportData_Click(object sender, RoutedEventArgs e)
+        {
+            Main_ViewModel.ChartAutoUpdate = false;
+            ExportData(Main_ViewModel.Series1);
+        }
+
+        private void cleanGraph_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var sensor in Main_ViewModel.SensorsList)
+            {
+                if (sensor.ParentId == Main_ViewModel.SelectedSensor.ParentId && sensor.SensorId == Main_ViewModel.SelectedSensor.SensorId)
+                    sensor.Samples.Clear();
+            }
+        }
+
+        private void getDataFromDb_Click(object sender, RoutedEventArgs e)
+        {
+            Main_ViewModel.ChartAutoUpdate = false;
+            Main_ViewModel.SelectedSensor.Samples.Clear();
+            GetDataFromDb(
+                Main_ViewModel.SelectedSensor.ParentId,
+                Main_ViewModel.SelectedSensor.SensorId,
+                Main_ViewModel.SelectedDateRange.GetFromDateTime(),
+                Main_ViewModel.SelectedDateRange.GetToDateTime(),
+                conn);
+
+        }
         //To check if you're connected or not:
         //System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
     }
