@@ -10,13 +10,7 @@
         mc:Ignorable="d"
         Height="auto" Width="auto">
 
-    <!--
-    <Border.DataContext>
-        <vm:Main_ViewModel/>
-    </Border.DataContext>
-    -->
-    
-    <Grid>
+    <Grid Background="AliceBlue">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
@@ -32,22 +26,61 @@
             <Label Content="Podłączone urządzenia" />
             <DataGrid x:Name="DataGrid_Devices"
                       ItemsSource="{Binding DevicesList, Mode=OneWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"
-                      AutoGenerateColumns="True"
+                      AutoGenerateColumns="false"
                       CanUserAddRows="False"
                       Height="300"
                       Width="auto"
                       HorizontalAlignment="Stretch"
                       Margin="0,0,0,10">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID urządzenia" Binding="{Binding DeviceId}"/>
+                    <DataGridTextColumn Header="Nazwa urządzenia" Binding="{Binding DeviceName}"/>
+                    <DataGridTextColumn Header="Adres IP" Binding="{Binding DeviceIpAddress}"/>
+                    <DataGridTextColumn Header="Interwal odświeżanie danych [ms]" Binding="{Binding DeviceUpdateInterval}"/>
+                </DataGrid.Columns>
+                
+                <DataGrid.CellStyle>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                    </Style>
+                </DataGrid.CellStyle>
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Label.HorizontalContentAlignment" Value="Center" />
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
             </DataGrid>
             <Label Content="Podłączone czujniki" />
             <DataGrid x:Name="DataGrid_Sensors"
+                      SelectionMode="Single"
                       ItemsSource="{Binding SensorsList, Mode=OneWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                       SelectedItem="{Binding SelectedSensor, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"
-                      AutoGenerateColumns="True"
+                      AutoGenerateColumns="false"
                       CanUserAddRows="False"
                       Height="300"
                       Width="auto"
                       HorizontalAlignment="Stretch">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID urządzenia" Binding="{Binding ParentId}"/>
+                    <DataGridTextColumn Header="Nazwa urządzenia" Binding="{Binding ParentName}"/>
+                    <DataGridTextColumn Header="ID czujnika" Binding="{Binding SensorId}"/>
+                    <DataGridTextColumn Header="Nazwa czujnika" Binding="{Binding SensorName}"/>
+                    <DataGridTextColumn Header="Typ czujnika" Binding="{Binding SensorType}"/>
+                    <DataGridTextColumn Header="Data" Binding="{Binding TimeStamp}"/>
+                    <DataGridTextColumn Header="Wartość" Binding="{Binding SensorValue}"/>
+                    <DataGridTextColumn Header="Jednostka" Binding="{Binding SensorUnit}"/>
+                </DataGrid.Columns>
+
+                <DataGrid.CellStyle>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                    </Style>
+                </DataGrid.CellStyle>
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Label.HorizontalContentAlignment" Value="Center" />
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
             </DataGrid>
 
             <StackPanel Orientation="Horizontal">
@@ -119,7 +152,7 @@
             <lvc:CartesianChart x:Name="chart"
                                     Padding="0,0,10,10"
                                     Width="750"
-                                    Height="420"
+                                    Height="640"
                                     HorizontalAlignment="Left"
                                     Series="{Binding Series}">
                     <lvc:CartesianChart.AxisX>

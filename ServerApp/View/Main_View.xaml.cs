@@ -1,27 +1,19 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Net;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.ComponentModel;
 using ServerApp.Model;
-using WebSocketSharp;
 using WebSocketSharp.Server;
-using System.Windows.Data;
-using System.Collections.ObjectModel;
-using System.Text.Json;
 using ServerApp.ViewModel;
 using MySql.Data.MySqlClient;
 using System.Data;
-using LiveCharts.Wpf;
+using CsvHelper;
+using System.IO;
+using System.Globalization;
+using Microsoft.Win32;
 
 namespace ServerApp.View
 {
-    /// <summary>
-    /// Logika interakcji dla klasy Main_View.xaml
-    /// </summary>
     public partial class Main_View
     {
         public static Main_ViewModel Main_ViewModel { get; set; }
@@ -197,18 +189,6 @@ namespace ServerApp.View
                 Button_DisconnectDb.IsEnabled = false;
                 TextBox_DbIPAddress.IsEnabled = true;
                 TextBox_DbPortNo.IsEnabled = true;
-
-                /*
-                switch (ex.Number)
-                {
-                    case 0:
-                        MessageBox.Show("Cannot connect to server.  Contact administrator");
-                        break;
-                    case 1045:
-                        MessageBox.Show("Invalid username/password, please try again");
-                        break;
-                }
-                */
             }
         }
         public void StopDb()
@@ -279,12 +259,6 @@ namespace ServerApp.View
                 cmd.CommandText = "SELECT * FROM " + tableName + " WHERE DateStamp BETWEEN '" + 
                     dateFrom.ToString("yyyy-MM-dd HH:mm:ss") + "' AND '" + 
                     dateTo.ToString("yyyy-MM-dd HH:mm:ss") + "'";
-
-                /*
-                cmd.CommandText = "SELECT * FROM 1_1 WHERE DateStamp BETWEEN '@dateFrom' AND '@dateTo'";
-                cmd.Parameters.AddWithValue("@dateFrom", dateFrom.ToString("yyyy’-‘MM’-‘dd’T’HH’:’mm’:’ss"));
-                cmd.Parameters.AddWithValue("@dateTo", dateTo.ToString("yyyy’-‘MM’-‘dd’T’HH’:’mm’:’ss"));
-                */
                 MySqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())
@@ -301,15 +275,25 @@ namespace ServerApp.View
             }
         }
 
-        public void ExportData (LineSeries series)
+        public void ExportData()
         {
-            
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            saveFileDialog1.Filter = "Wartości rozdzielone przecinkiem|*.csv|Plik tekstowy|*.txt";
+            saveFileDialog1.Title = "Zapisz dane pomiarowe";
+            saveFileDialog1.ShowDialog();
+
+            using var writer = new StreamWriter(saveFileDialog1.OpenFile());
+            using var csvWriter = new CsvWriter(writer, CultureInfo.CurrentCulture);
+
+            csvWriter.WriteHeader<SensorSample>();
+            csvWriter.NextRecord();
+            csvWriter.WriteRecords(Main_ViewModel.SelectedSensor.Samples);
         }
 
         private void exportData_Click(object sender, RoutedEventArgs e)
         {
             Main_ViewModel.ChartAutoUpdate = false;
-            ExportData(Main_ViewModel.Series1);
+            ExportData();
         }
 
         private void cleanGraph_Click(object sender, RoutedEventArgs e)
@@ -333,8 +317,5 @@ namespace ServerApp.View
                 conn);
 
         }
-        //To check if you're connected or not:
-        //System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
     }
-
 }

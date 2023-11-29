@@ -1,21 +1,12 @@
 ﻿using ServerApp.Model;
-using ServerApp.View;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-
-//using CommunityToolkit.Mvvm.ComponentModel;
-using LiveChartsCore;
-using LiveChartsCore.Defaults;
-using LiveChartsCore.SkiaSharpView;
 using LiveCharts;
 using LiveCharts.Wpf;
 using System.Windows.Media;
 using LiveCharts.Configurations;
-using Google.Protobuf.WellKnownTypes;
 
 namespace ServerApp.ViewModel
 {
@@ -338,13 +329,13 @@ namespace ServerApp.ViewModel
             }
         }
 
-        /* Dodawanie próbek
-Samples.Add(new SensorSample
-{
-DateTime = DateTime.Now,
-Value = 5
-});
-*/
+                /* Dodawanie próbek
+        Samples.Add(new SensorSample
+        {
+        DateTime = DateTime.Now,
+        Value = 5
+        });
+        */
 
         public Main_ViewModel()
         {
