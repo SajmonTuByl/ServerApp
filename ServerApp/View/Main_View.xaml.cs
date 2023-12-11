@@ -21,6 +21,7 @@ namespace ServerApp.View
         WebSocketServer wssv;
         static MySql.Data.MySqlClient.MySqlConnection conn;
         MySql.Data.MySqlClient.MySqlCommand cmd;
+        public static bool lockUpdate = false;
 
         public Main_View()
         {
@@ -52,9 +53,11 @@ namespace ServerApp.View
                 // Dodawanie sensorów do SensorsLIst
                 foreach (var item in Main_ViewModel.DevicesList)
                 {
-                    foreach (var receivedSensor in item.SensorsList)
+                    if (!lockUpdate)
                     {
-                        if (conn != null && conn.State == ConnectionState.Open) AddSensorToDb(receivedSensor.ParentId, receivedSensor.SensorId, receivedSensor.TimeStamp, receivedSensor.SensorValue, conn);
+                        foreach (var receivedSensor in item.SensorsList)
+                        {
+                            if (conn != null && conn.State == ConnectionState.Open) AddSensorToDb(receivedSensor.ParentId, receivedSensor.SensorId, receivedSensor.TimeStamp, receivedSensor.SensorValue, conn);
                             bool foundSensor = false;
                             foreach (var sensor in Main_ViewModel.SensorsList)
                             {
@@ -80,6 +83,7 @@ namespace ServerApp.View
                                 }
                             }
                             if (!foundSensor) Main_ViewModel.SensorsList.Add(receivedSensor); ;
+                        }
                     }
                 }
             });
@@ -249,7 +253,8 @@ namespace ServerApp.View
         }
 
         public void GetDataFromDb(int parentId, int sensorId, DateTime dateFrom, DateTime dateTo, MySql.Data.MySqlClient.MySqlConnection conn)
-        { 
+        {
+            lockUpdate = true;
             try
             {
                 string tableName = parentId.ToString() + "_" + sensorId.ToString();
@@ -273,6 +278,7 @@ namespace ServerApp.View
             {
                 MessageBox.Show(ex.Message);
             }
+            lockUpdate = false;
         }
 
         public void ExportData()

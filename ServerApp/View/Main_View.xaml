@@ -16,8 +16,8 @@
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"></ColumnDefinition>
-            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="3*"></ColumnDefinition>
+            <ColumnDefinition Width="4*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
         <StackPanel Grid.Column="0"
@@ -28,7 +28,7 @@
                       ItemsSource="{Binding DevicesList, Mode=OneWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                       AutoGenerateColumns="false"
                       CanUserAddRows="False"
-                      Height="300"
+                      Height="250"
                       Width="auto"
                       HorizontalAlignment="Stretch"
                       Margin="0,0,0,10">
@@ -57,7 +57,7 @@
                       SelectedItem="{Binding SelectedSensor, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                       AutoGenerateColumns="false"
                       CanUserAddRows="False"
-                      Height="300"
+                      Height="250"
                       Width="auto"
                       HorizontalAlignment="Stretch">
                 <DataGrid.Columns>
@@ -152,7 +152,7 @@
             <lvc:CartesianChart x:Name="chart"
                                     Padding="0,0,10,10"
                                     Width="750"
-                                    Height="640"
+                                    Height="540"
                                     HorizontalAlignment="Left"
                                     Series="{Binding Series}">
                     <lvc:CartesianChart.AxisX>

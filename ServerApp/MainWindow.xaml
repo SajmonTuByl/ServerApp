@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ServerApp"
         xmlns:views="clr-namespace:ServerApp.View"
         mc:Ignorable="d"
-        Title="ServerApp" Height="900" Width="1600">
+        Title="ServerApp" Height="720" Width="1400">
     <Grid>
         <views:Main_View />
     </Grid>
